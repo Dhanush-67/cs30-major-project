@@ -20,20 +20,22 @@ class spaceship{
     this.y = y;
     this.dx = 0;
     this.dy = 0;
+    this.isMoveSpaceship = false;
   }
 
   display(){
     circle(this.x,this.y,50);
   }
 
-  moveSpaceship(){
-    this.x += this.dx;
-    this.y += this.dy;
-
-    this.dx = 0;
-    this.dy = 0;
+  moveSpaceship(b){
+    this.isMoveSpaceship = b;
   }
-
+  
+  update(){
+    if (this.isMoveSpaceship){
+      this.x += 1;
+    }
+  }
 }
 
 //global variables
@@ -49,23 +51,27 @@ function setup() {
 function draw() {
   background(220);
   Spaceship.display();
+  Spaceship.update();
 }
 
 //functions
 function keyPressed(){
   if (key === "s") { //move down
-    Spaceship.moveSpaceship(Spaceship.dy += 30);
+    Spaceship.moveSpaceship(true);
   }
   else if (key === "w") { //move up
-    Spaceship.moveSpaceship(Spaceship.dy = -30);
+    Spaceship.moveSpaceship(true);
   }
   else if (key === "a") { //move left
-    Spaceship.moveSpaceship(Spaceship.dx = -30);
+    Spaceship.moveSpaceship(true);
   }
   else if (key === "d") { //move right
-    Spaceship.moveSpaceship(Spaceship.dx = 30);
+    Spaceship.moveSpaceship(true);
   }
 }
 
+function keyReleased() {
+  Spaceship.moveSpaceship(false);
+}
 
 
