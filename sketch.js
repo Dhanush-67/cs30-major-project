@@ -20,21 +20,35 @@ class spaceship{
     this.y = y;
     this.dx = 0;
     this.dy = 0;
-    this.isMoveSpaceship = false;
+    this.size = 50;
+    this.heading = 0;
+    this.rotation = 0;
+    this.vel = createVector(0,0);
+    this.isGoingForward = false;
+    this.pos = createVector(x,y);
   }
 
   display(){
-    circle(this.x,this.y,50);
+    circle(this.x,this.y,this.size);
   }
 
-  moveSpaceship(b){
-    this.isMoveSpaceship = b;
+  goingForward(x){
+    this.isGoingForward = x;
   }
+
   
   update(){
-    if (this.isMoveSpaceship){
-      this.x += 1;
+    if (this.isgoingForward){
+      this.forward();
     }
+    this.pos.add(this.vel);
+    this.vel.mult(0.98);
+  }
+
+  forward(){
+    let force  = p5.Vector.fromAngle(this.heading);
+    force.mult(0.1);
+    this.vel.add(force);
   }
 }
 
@@ -55,23 +69,35 @@ function draw() {
 }
 
 //functions
-function keyPressed(){
-  if (key === "s") { //move down
-    Spaceship.moveSpaceship(true);
+function keyPressed() {
+  if (keyCode === 68) {
+    Spaceship.setRotation(0.1);
   }
-  else if (key === "w") { //move up
-    Spaceship.moveSpaceship(true);
+  else if (keyCode === 65) {
+    Spaceship.setRotation(-0.1);
   }
-  else if (key === "a") { //move left
-    Spaceship.moveSpaceship(true);
-  }
-  else if (key === "d") { //move right
-    Spaceship.moveSpaceship(true);
+  else if (keyCode === 87) {
+    Spaceship.goingForward(true);
   }
 }
 
 function keyReleased() {
-  Spaceship.moveSpaceship(false);
+  Spaceship.goingForward(false);
 }
+
+// function keyPressed(){
+//   if (key === "s") { //move down
+//     Spaceship.moveSpaceship(true);
+//   }
+//   else if (key === "w") { //move up
+//     Spaceship.moveSpaceship(true);
+//   }
+//   else if (key === "a") { //move left
+//     Spaceship.moveSpaceship(true);
+//   }
+//   else if (key === "d") { //move right
+//     Spaceship.moveSpaceship(true);
+//   }
+// }
 
 
