@@ -5,6 +5,12 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+//Things to remeber
+/* the from angle function onlu uses radians while others can be in degrees or rads. The from angle function draws a vector from a 
+point to a certain degree from the x axis to a certain length. We need to input the degrees and length of the vector. The heading function
+gives us the degrees we turned the object by. The rotate function roates the object by a certain degree in respect to the origin.
+Therefore we need to translate the object and then use rotate.*/
+
 // order of code
 // class constructors
 // global variables
@@ -16,8 +22,8 @@
 
 class spaceship{
   constructor(x,y){
-    this.x = x;
-    this.y = y;
+    //this.x = x;
+    //this.y = y;
     this.dx = 0;
     this.dy = 0;
     this.size = 50;
@@ -29,7 +35,7 @@ class spaceship{
   }
 
   display(){
-    circle(this.x,this.y,this.size);
+    circle(this.pos.x,this.pos.y,this.size);
   }
 
   goingForward(x){
@@ -38,7 +44,7 @@ class spaceship{
 
   
   update(){
-    if (this.isgoingForward){
+    if (this.isGoingForward){    
       this.forward();
     }
     this.pos.add(this.vel);
@@ -50,15 +56,25 @@ class spaceship{
     force.mult(0.1);
     this.vel.add(force);
   }
+
+  setRotation(a){
+    this.rotation = a;
+  }
+    
+  turn(){
+    this.heading += this.rotation;
+  }
 }
 
 //global variables
 let Spaceship;
+let spaceshipPos;
 
 //setup
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  Spaceship = new spaceship(width/2,height/2);
+  spaceshipPos = createVector(50,50);
+  Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y);
 }
 
 //draw 
@@ -85,19 +101,5 @@ function keyReleased() {
   Spaceship.goingForward(false);
 }
 
-// function keyPressed(){
-//   if (key === "s") { //move down
-//     Spaceship.moveSpaceship(true);
-//   }
-//   else if (key === "w") { //move up
-//     Spaceship.moveSpaceship(true);
-//   }
-//   else if (key === "a") { //move left
-//     Spaceship.moveSpaceship(true);
-//   }
-//   else if (key === "d") { //move right
-//     Spaceship.moveSpaceship(true);
-//   }
-// }
 
 
