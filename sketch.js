@@ -22,8 +22,6 @@ Therefore we need to translate the object and then use rotate.*/
 
 class spaceship{
   constructor(x,y){
-    //this.x = x;
-    //this.y = y;
     this.dx = 0;
     this.dy = 0;
     this.size = 50;
@@ -55,6 +53,7 @@ class spaceship{
     let force  = p5.Vector.fromAngle(this.heading);
     force.mult(0.1);
     this.vel.add(force);
+    console.log(this.vel);
   }
 
   setRotation(a){
