@@ -46,14 +46,15 @@ class spaceship{
       this.forward();
     }
     this.pos.add(this.vel);
+    console.log(this.vel);
     this.vel.mult(0.98);
+    console.log(this.vel);
   }
 
   forward(){
     let force  = p5.Vector.fromAngle(this.heading);
     force.mult(0.1);
     this.vel.add(force);
-    console.log(this.vel);
   }
 
   setRotation(a){
