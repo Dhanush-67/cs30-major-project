@@ -1,12 +1,12 @@
 // Project Title
-// Your Name
+// Dhanush Rai
 // Date
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
 //Things to remeber
-/* the from angle function onlu uses radians while others can be in degrees or rads. The from angle function draws a vector from a 
+/* the from angle function only uses radians while others can be in degrees or rads. The from angle function draws a vector from a 
 point to a certain degree from the x axis to a certain length. We need to input the degrees and length of the vector. The heading function
 gives us the degrees we turned the object by. The rotate function roates the object by a certain degree in respect to the origin.
 Therefore we need to translate the object and then use rotate.*/
@@ -21,7 +21,7 @@ Therefore we need to translate the object and then use rotate.*/
 
 
 class spaceship{
-  constructor(x,y){
+  constructor(x,y,img){
     this.dx = 0;
     this.dy = 0;
     this.size = 50;
@@ -30,51 +30,93 @@ class spaceship{
     this.vel = createVector(0,0);
     this.isGoingForward = false;
     this.pos = createVector(x,y);
+    this.img = img
   }
 
   display(){
-    circle(this.pos.x,this.pos.y,this.size);
+    push()
+    translate(this.pos.x,this.pos.y);
+    circle(0,0,this.size);
+    line(this.pos.x,this.pos.y,this.pos.x+30,this.pos.y);
+    //image(this.img, this.pos.x, this.pos.y);
+    pop()
   }
-
+  
+  // checks if the "w" is pressed if yes it sets isGoingForward to true
   goingForward(x){
     this.isGoingForward = x;
   }
 
   
   update(){
+    /* adds the force vector to the vel vector which is then added to the pos vector. Then the vel vector
+    is mult by 0.98(this number must be quite smaller compared to the rate of force vector being 
+    added else the spaceshipwon't move much) to slowly reduce the vel vector and if no more force 
+    vector is added the vel vector approaches 0 which causes the spaceship to stop*/
     if (this.isGoingForward){    
       this.forward();
     }
     this.pos.add(this.vel);
-    console.log(this.vel);
     this.vel.mult(0.98);
-    console.log(this.vel);
-  }
 
+    // setting key binds
+    if (keyIsDown(87)){
+      Spaceship.goingForward(true);
+    }
+    if (keyIsDown(68)) {
+      Spaceship.setRotation(0.1);
+    }
+    if(keyIsDown(65)) {
+      Spaceship.setRotation(-0.1);
+    }
+  }
+  
+  /*As long as "w" is pressed a new force vector of 0.1 keeps getting added to this.vel vector this is
+  because the forward function is called in update function which is in the draw loop.*/
   forward(){
-    let force  = p5.Vector.fromAngle(this.heading);
-    force.mult(0.1);
+    let force  = p5.Vector.fromAngle(this.heading,0.1);
     this.vel.add(force);
   }
+
 
   setRotation(a){
     this.rotation = a;
   }
+
     
   turn(){
-    this.heading += this.rotation;
+   this.heading += this.rotation;
   }
+
+  edges(){
+    if (this.pos.x > width + this.size){
+      this.pos.x = -this.size;
+    }
+    else if (this.pos.x < -this.size){
+      this.pos.x = width + this.size;
+    }
+    if (this.pos.y > height + this.size){
+      this.pos.y = -this.size;
+    }
+    else if (this.pos.y < -this.size){
+      this.pos.y = height + this.size;
+    }
+  };
 }
 
 //global variables
 let Spaceship;
 let spaceshipPos;
 
+function preload(){
+  spaceshipImg = loadImage("Spaceship image.png");
+}
+
 //setup
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  spaceshipPos = createVector(50,50);
-  Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y);
+  spaceshipPos = createVector(windowWidth/2,windowHeight/2);
+  Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y, spaceshipImg);
 }
 
 //draw 
@@ -82,23 +124,26 @@ function draw() {
   background(220);
   Spaceship.display();
   Spaceship.update();
+  Spaceship.turn();
+  Spaceship.edges();
 }
 
 //functions
 function keyPressed() {
-  if (keyCode === 68) {
-    Spaceship.setRotation(0.1);
-  }
-  else if (keyCode === 65) {
-    Spaceship.setRotation(-0.1);
-  }
-  else if (keyCode === 87) {
-    Spaceship.goingForward(true);
-  }
+  // if (keyCode === 68) {
+  //   Spaceship.setRotation(0.1);
+  // }
+  // else if (keyCode === 65) {
+  //   Spaceship.setRotation(-0.1);
+  // }
+  // else if (keyCode === 87) {
+  //   Spaceship.goingForward(true);
+  // }
 }
 
 function keyReleased() {
   Spaceship.goingForward(false);
+  Spaceship.setRotation(0);
 }
 
 
