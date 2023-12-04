@@ -20,6 +20,41 @@ Therefore we need to translate the object and then use rotate.*/
 // functions
 
 
+// class Ship{
+//   constructor(x,y,w,h){
+//     this.x = x;
+//     this.y = y;
+//     this.w = w;
+//     this.h = h;
+//     this.ship = createSprite(x, y, w, h);
+//     this.ship.maxSpeed = 30;
+//     this.ship.health = 20;
+//     this.ship.friction = 0.015;
+//   }
+//   displayShip(){
+//     this.ship.addImage(spaceshipImg);
+//   }
+//   shipControls() {
+//     //moving controls
+//     if (keyIsDown(87)) { //thrust
+//       this.ship.addSpeed(0.1, this.ship.rotation);
+//       }
+    
+//     if (keyDown("A")) { //turn left
+//       ship.rotation -= 2.5;
+//     }
+  
+//     if (keyDown("D")) { //turn right
+//       ship.rotation += 2.5;
+//     }
+//   }
+// }
+
+// function createShip(x, y, w, h) {
+//   ship = createSprite(x, y, w, h);
+//   ship.addImage(spaceshipImg);
+// }
+
 class spaceship{
   constructor(x,y,img){
     this.dx = 0;
@@ -36,9 +71,9 @@ class spaceship{
   display(){
     push()
     translate(this.pos.x,this.pos.y);
-    circle(0,0,this.size);
-    line(this.pos.x,this.pos.y,this.pos.x+30,this.pos.y);
-    //image(this.img, this.pos.x, this.pos.y);
+    rotate(this.heading+PI/2)
+    imageMode(CENTER)
+    image(this.img, 0,0);
     pop()
   }
   
@@ -74,7 +109,7 @@ class spaceship{
   /*As long as "w" is pressed a new force vector of 0.1 keeps getting added to this.vel vector this is
   because the forward function is called in update function which is in the draw loop.*/
   forward(){
-    let force  = p5.Vector.fromAngle(this.heading,0.1);
+    let force  = p5.Vector.fromAngle(this.heading,0.5);
     this.vel.add(force);
   }
 
@@ -90,13 +125,13 @@ class spaceship{
 
   edges(){
     if (this.pos.x > width + this.size){
-      this.pos.x = -this.size;
+      this.pos.x = -10;
     }
     else if (this.pos.x < -this.size){
       this.pos.x = width + this.size;
     }
     if (this.pos.y > height + this.size){
-      this.pos.y = -this.size;
+      this.pos.y = -10;
     }
     else if (this.pos.y < -this.size){
       this.pos.y = height + this.size;
@@ -109,7 +144,7 @@ let Spaceship;
 let spaceshipPos;
 
 function preload(){
-  spaceshipImg = loadImage("Spaceship image.png");
+  spaceshipImg = loadImage("Assets/Images/Spaceship image.png");
 }
 
 //setup
@@ -117,6 +152,8 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   spaceshipPos = createVector(windowWidth/2,windowHeight/2);
   Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y, spaceshipImg);
+  //createShip(width/2, height/2, 50, 50);
+  //rock = new Ship(width/2, height/2, 50, 50);
 }
 
 //draw 
@@ -130,21 +167,15 @@ function draw() {
 
 //functions
 function keyPressed() {
-  // if (keyCode === 68) {
-  //   Spaceship.setRotation(0.1);
-  // }
-  // else if (keyCode === 65) {
-  //   Spaceship.setRotation(-0.1);
-  // }
-  // else if (keyCode === 87) {
-  //   Spaceship.goingForward(true);
-  // }
 }
 
 function keyReleased() {
   Spaceship.goingForward(false);
   Spaceship.setRotation(0);
 }
+
+
+
 
 
 
