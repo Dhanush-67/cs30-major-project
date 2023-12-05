@@ -6,36 +6,44 @@
 // - describe what you did to take this project "above and beyond"
 
 let Spaceship;
-let spaceshipPos;
 
-class spaceship{
-  constructor(x,y,img){
-    this.x = x;
-    this.y = y;
-    this.img = img;
-    this.ship = createSprite(x, y, 50,50);
-    this.ship.addImage(spaceshipImg);
-    //this.ship.vel.x = -2;
-    if (mouseIsPressed()) {
-      //           (x, y, speed)
-      //           (position, speed)
-      this.ship.moveTo(mouseX, mouseY, 8);
-    }
-  }
-}
-
-function preload(){
-  spaceshipImg = loadImage("SHIP.png");
-}
-
-//setup
-function setup() {
+function setup(){
   createCanvas(windowWidth, windowHeight);
-  spaceshipPos = createVector(windowWidth/2,windowHeight/2);
-  Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y, spaceshipImg);
+  createSpaceship(width/2,height/2,50,50,);
 }
 
-//draw 
 function draw() {
-  background(220);
+	clear();
 }
+
+function createSpaceship(x,y,w,h){
+  Spaceship = new Sprite(x, y, w, h);
+  Spaceship.addImage("SHIP.png");
+}
+
+
+
+// let player, gems;
+
+// function setup() {
+// 	new Canvas(160, 456);
+
+// 	gems = new Group();
+// 	gems.diameter = 10;
+// 	gems.x = () => random(0, canvas.w);
+// 	gems.y = () => random(0, canvas.h);
+// 	gems.amount = 80;
+
+// 	player = new Sprite();
+
+// 	player.overlaps(gems, collect);
+// }
+
+// function collect(player, gem) {
+// 	gem.remove();
+// }
+
+// function draw() {
+// 	clear();
+// 	player.moveTowards(mouse);
+// }
