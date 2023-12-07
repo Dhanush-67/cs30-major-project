@@ -13,12 +13,31 @@ function setup(){
 }
 
 function draw() {
-	clear();
+  clear();
+  spaceshipMovement();
+  
 }
 
+//Spaceship stuff
 function createSpaceship(x,y,w,h){
   Spaceship = new Sprite(x, y, w, h);
   Spaceship.addImage("SHIP.png");
+}
+
+function spaceshipMovement(){
+  Spaceship.speed = 3;
+  if (kb.pressing('up')) {
+    Spaceship.direction = -90;
+  } else if (kb.pressing('down')) {
+    Spaceship.direction = 90;
+  } else if (kb.pressing('left')) {
+    Spaceship.direction = 180;
+    Spaceship.rotate(45);
+  } else if (kb.pressing('right')) {
+    Spaceship.direction = 0;
+  } else {
+	  Spaceship.speed = 0;
+  }
 }
 
 
