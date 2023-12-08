@@ -20,43 +20,9 @@ Therefore we need to translate the object and then use rotate.*/
 // functions
 
 
-// class Ship{
-//   constructor(x,y,w,h){
-//     this.x = x;
-//     this.y = y;
-//     this.w = w;
-//     this.h = h;
-//     this.ship = createSprite(x, y, w, h);
-//     this.ship.maxSpeed = 30;
-//     this.ship.health = 20;
-//     this.ship.friction = 0.015;
-//   }
-//   displayShip(){
-//     this.ship.addImage(spaceshipImg);
-//   }
-//   shipControls() {
-//     //moving controls
-//     if (keyIsDown(87)) { //thrust
-//       this.ship.addSpeed(0.1, this.ship.rotation);
-//       }
-    
-//     if (keyDown("A")) { //turn left
-//       ship.rotation -= 2.5;
-//     }
-  
-//     if (keyDown("D")) { //turn right
-//       ship.rotation += 2.5;
-//     }
-//   }
-// }
-
-// function createShip(x, y, w, h) {
-//   ship = createSprite(x, y, w, h);
-//   ship.addImage(spaceshipImg);
-// }
-
 class spaceship{
   constructor(x,y,img){
+    this.hitbox = [this.x,this.y,]
     this.dx = 0;
     this.dy = 0;
     this.size = 50;
@@ -137,12 +103,19 @@ class spaceship{
       this.pos.y = height + this.size;
     }
   };
+  handleKeyPress() {
+    if (keyIsDown(32)){
+      let bullet = new Bullet(this.x + (shipImage.width/2 - bulletImage.width/2), this.y,0,this.dy,bulletImage);
+      bulletArray.push(bullet);
+    }
+  }
 }
 
 //global variables
 let Spaceship;
 let spaceshipPos;
 
+//preload
 function preload(){
   spaceshipImg = loadImage("Assets/Images/Spaceship image.png");
 }
@@ -152,8 +125,6 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   spaceshipPos = createVector(windowWidth/2,windowHeight/2);
   Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y, spaceshipImg);
-  //createShip(width/2, height/2, 50, 50);
-  //rock = new Ship(width/2, height/2, 50, 50);
 }
 
 //draw 
@@ -167,6 +138,7 @@ function draw() {
 
 //functions
 function keyPressed() {
+  Spaceship.handleKeyPress();
 }
 
 function keyReleased() {

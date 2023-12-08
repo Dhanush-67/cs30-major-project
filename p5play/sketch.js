@@ -22,23 +22,23 @@ function draw() {
 function createSpaceship(x,y,w,h){
   Spaceship = new Sprite(x, y, w, h);
   Spaceship.addImage("SHIP.png");
+  //Spaceship.rotation = 90
 }
 
 function spaceshipMovement(){
-  Spaceship.speed = 3;
-  if (kb.pressing('up')) {
-    Spaceship.direction = -90;
-  } else if (kb.pressing('down')) {
-    Spaceship.direction = 90;
-  } else if (kb.pressing('left')) {
-    Spaceship.direction = 180;
-    Spaceship.rotate(45);
-  } else if (kb.pressing('right')) {
-    Spaceship.direction = 0;
-  } else {
-	  Spaceship.speed = 0;
-  }
+  if (kb.presses('up')) { //thrust
+  Spaceship.applyForce(0.1, Spaceship.rotation);
 }
+
+if (kb.presses('left')) { //turn left
+  Spaceship.rotation -= 2.5;
+}
+
+if (kb.presses('right')) { //turn right
+  Spaceship.rotation += 2.5;
+}
+}
+
 
 
 
