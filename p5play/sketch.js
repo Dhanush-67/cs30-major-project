@@ -14,55 +14,25 @@ function setup(){
 
 function draw() {
   clear();
-  spaceshipMovement();
-  
+  spaceshipControls();
 }
 
 //Spaceship stuff
 function createSpaceship(x,y,w,h){
   Spaceship = new Sprite(x, y, w, h);
   Spaceship.addImage("SHIP.png");
-  //Spaceship.rotation = 90
 }
 
-function spaceshipMovement(){
-  if (kb.presses('up')) { //thrust
-  Spaceship.applyForce(0.1, Spaceship.rotation);
+function spaceshipControls(){
+  if (kb.pressing('up')){
+    Spaceship.bearing = Spaceship.rotation-90;
+    Spaceship.applyForce(8);
+    console.log(Spaceship.vel.y);
+  } 
+  else{
+    Spaceship.vel.y = 0;
+    Spaceship.vel.x = 0;
+  } 
+  if (kb.pressing('right')) Spaceship.rotation += 3;
+  if (kb.pressing('left')) Spaceship.rotation -= 3;
 }
-
-if (kb.presses('left')) { //turn left
-  Spaceship.rotation -= 2.5;
-}
-
-if (kb.presses('right')) { //turn right
-  Spaceship.rotation += 2.5;
-}
-}
-
-
-
-
-// let player, gems;
-
-// function setup() {
-// 	new Canvas(160, 456);
-
-// 	gems = new Group();
-// 	gems.diameter = 10;
-// 	gems.x = () => random(0, canvas.w);
-// 	gems.y = () => random(0, canvas.h);
-// 	gems.amount = 80;
-
-// 	player = new Sprite();
-
-// 	player.overlaps(gems, collect);
-// }
-
-// function collect(player, gem) {
-// 	gem.remove();
-// }
-
-// function draw() {
-// 	clear();
-// 	player.moveTowards(mouse);
-// }
