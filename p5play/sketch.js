@@ -21,18 +21,20 @@ function draw() {
 function createSpaceship(x,y,w,h){
   Spaceship = new Sprite(x, y, w, h);
   Spaceship.addImage("SHIP.png");
+  //Spaceship.maxSpeed = 5;
 }
 
 function spaceshipControls(){
   if (kb.pressing('up')){
-    Spaceship.bearing = Spaceship.rotation-90;
-    Spaceship.applyForce(8);
+    Spaceship.addSpeed(0.1, Spaceship.rotation-90);
+    // Spaceship.bearing = Spaceship.rotation-90;
+    // Spaceship.applyForce(100);
     console.log(Spaceship.vel.y);
   } 
   else{
     Spaceship.vel.y = 0;
     Spaceship.vel.x = 0;
   } 
-  if (kb.pressing('right')) Spaceship.rotation += 3;
-  if (kb.pressing('left')) Spaceship.rotation -= 3;
+  if (kb.pressing('right')) Spaceship.rotation += 5;
+  if (kb.pressing('left')) Spaceship.rotation -= 5;
 }

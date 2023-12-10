@@ -3157,6 +3157,26 @@ p5.prototype.registerMethod('init', function p5playInit() {
 		}
 
 		/**
+  * Pushes the sprite in a direction defined by an angle.
+  * The force is added to the current velocity.
+  *
+  * @method addSpeed
+  * @param {Number}  speed Scalar speed to add
+  * @param {Number}  angle Direction in degrees
+  */
+		addSpeed = function(speed, angle) {
+			var a;
+			if (pInst._angleMode === pInst.RADIANS) {
+			  a = radians(angle);
+			} else {
+			  a = angle;
+			}
+			this.velocity.x += cos(a) * speed;
+			this.velocity.y += sin(a) * speed;
+		  };
+
+
+		/**
 		 * Finds the minimium amount the sprite would have to rotate to
 		 * "face" a position at a specified "facing" rotation.
 		 *
