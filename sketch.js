@@ -22,7 +22,7 @@ Therefore we need to translate the object and then use rotate.*/
 
 class spaceship{
   constructor(x,y,img){
-    this.hitbox = [this.x,this.y,]
+    this.hitbox = [this.x,this.y,];
     this.dx = 0;
     this.dy = 0;
     this.size = 50;
@@ -31,16 +31,16 @@ class spaceship{
     this.vel = createVector(0,0);
     this.isGoingForward = false;
     this.pos = createVector(x,y);
-    this.img = img
+    this.img = img;
   }
 
   display(){
-    push()
+    push();
     translate(this.pos.x,this.pos.y);
-    rotate(this.heading+PI/2)
-    imageMode(CENTER)
+    rotate(this.heading+PI/2);
+    imageMode(CENTER);
     image(this.img, 0,0);
-    pop()
+    pop();
   }
   
   // checks if the "w" is pressed if yes it sets isGoingForward to true
@@ -58,24 +58,28 @@ class spaceship{
       this.forward();
     }
     this.pos.add(this.vel);
-    this.vel.mult(0.98);
+    this.vel.mult(0.98);//air resistance basically(tho space does not have resistance)
 
     // setting key binds
     if (keyIsDown(87)){
       Spaceship.goingForward(true);
     }
     if (keyIsDown(68)) {
-      Spaceship.setRotation(0.1);
+      Spaceship.setRotation(0.09);
     }
     if(keyIsDown(65)) {
-      Spaceship.setRotation(-0.1);
+      Spaceship.setRotation(-0.09);
+    }
+    for (let bullet of bulletArray) {
+      bullet.display();
+      bullet.update();
     }
   }
   
   /*As long as "w" is pressed a new force vector of 0.1 keeps getting added to this.vel vector this is
   because the forward function is called in update function which is in the draw loop.*/
   forward(){
-    let force  = p5.Vector.fromAngle(this.heading,0.5);
+    let force  = p5.Vector.fromAngle(this.heading,0.1);
     this.vel.add(force);
   }
 
@@ -86,7 +90,7 @@ class spaceship{
 
     
   turn(){
-   this.heading += this.rotation;
+    this.heading += this.rotation;
   }
 
   edges(){
@@ -102,18 +106,43 @@ class spaceship{
     else if (this.pos.y < -this.size){
       this.pos.y = height + this.size;
     }
-  };
+  }
+
   handleKeyPress() {
     if (keyIsDown(32)){
-      let bullet = new Bullet(this.x + (shipImage.width/2 - bulletImage.width/2), this.y,0,this.dy,bulletImage);
+      let bullet = new Bullet(this.pos.x, this.pos.y,this.heading);
       bulletArray.push(bullet);
     }
   }
 }
 
+class Bullet{
+  constructor(x,y,heading){
+    this.pos = createVector(x,y);
+    this.vel = p5.Vector.fromAngle(heading,10);
+    //this.vel.mult(10);
+  }
+
+  update(){
+    this.pos.add(this.vel);
+  }
+
+  display(){
+    push();
+    stroke("blue");
+    strokeWeight(4);
+    translate(this.pos.x,this.pos.y);
+    circle(0,0,10);
+    pop();
+  }
+}
+
+
 //global variables
 let Spaceship;
 let spaceshipPos;
+let spaceshipImg;
+let bulletArray = [];
 
 //preload
 function preload(){
