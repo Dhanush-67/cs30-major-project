@@ -120,7 +120,7 @@ class Bullet{
   constructor(x,y,heading){
     this.pos = createVector(x,y);
     this.vel = p5.Vector.fromAngle(heading,10);
-    //this.vel.mult(10);
+    this.heading = heading;
   }
 
   update(){
@@ -132,21 +132,29 @@ class Bullet{
     stroke("blue");
     strokeWeight(4);
     translate(this.pos.x,this.pos.y);
-    circle(0,0,10);
+    rotate(this.heading);
+    imageMode(CENTER);
+    image(bulletImg, 0,0);
     pop();
   }
 }
 
 
 //global variables
+//spaceship variables
 let Spaceship;
 let spaceshipPos;
 let spaceshipImg;
+let background;
+
+//bullet variables
 let bulletArray = [];
+let bulletImg;
 
 //preload
 function preload(){
   spaceshipImg = loadImage("Assets/Images/Spaceship image.png");
+  bulletImg = loadImage("Assets/Images/bullet.gif");
 }
 
 //setup
@@ -159,8 +167,8 @@ function setup() {
 //draw 
 function draw() {
   background(220);
-  Spaceship.display();
   Spaceship.update();
+  Spaceship.display();
   Spaceship.turn();
   Spaceship.edges();
 }
