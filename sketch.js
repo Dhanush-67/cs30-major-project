@@ -82,7 +82,7 @@ class spaceship{
   forward(){
     let force  = p5.Vector.fromAngle(this.heading,0.1);
     this.vel.add(force);
-    console.log(this.vel)
+    console.log(this.vel);
   }
 
 
@@ -121,7 +121,7 @@ class spaceship{
 class Bullet{
   constructor(x,y,heading){
     this.pos = createVector(x,y);
-    this.vel = p5.Vector.fromAngle(heading,15);
+    this.vel = p5.Vector.fromAngle(heading,5);
     this.heading = heading;
   }
 
@@ -133,14 +133,15 @@ class Bullet{
     push();
     stroke("blue");
     strokeWeight(4);
+    imageMode(CENTER);
     translate(this.pos.x,this.pos.y);
     rotate(this.heading);
-    scale(0.3)
-    imageMode(CENTER);
+    scale(0.3);
     image(bulletImg, 0,0);
     pop();
   }
 }
+
 
 
 //global variables
@@ -148,15 +149,24 @@ class Bullet{
 let Spaceship;
 let spaceshipPos;
 let spaceshipImg;
+let spaceshipImg2;
+let spaceshipImg3;
 let backgroundImg;
+
 
 //bullet variables
 let bulletArray = [];
 let bulletImg;
 
+//Asteroid variables
+let asteroidArray= [];
+
 //preload
 function preload(){
   spaceshipImg = loadImage("Assets/Images/Spaceship image.png");
+  spaceshipImg2 = loadImage("Assets/Images/Spaceship image(2).png");
+  spaceshipImg3 = loadImage("Assets/Images/Spaceship image(3).png");
+  backgroundImg = loadImage("Assets/Images/space bg.png");
   bulletImg = loadImage("Assets/Images/bullet.gif");
 }
 
@@ -169,7 +179,7 @@ function setup() {
 
 //draw 
 function draw() {
-  background(0);
+  background(backgroundImg);
   Spaceship.update();
   Spaceship.display();
   Spaceship.turn();
