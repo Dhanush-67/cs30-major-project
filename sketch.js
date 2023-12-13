@@ -38,6 +38,7 @@ class spaceship{
     push();
     translate(this.pos.x,this.pos.y);
     rotate(this.heading+PI/2);
+    scale(0.7)
     imageMode(CENTER);
     image(this.img, 0,0);
     pop();
@@ -58,7 +59,7 @@ class spaceship{
       this.forward();
     }
     this.pos.add(this.vel);
-    this.vel.mult(0.98);//air resistance basically(tho space does not have resistance)
+    this.vel.mult(0.99);//air resistance basically(tho space does not have resistance)
 
     // setting key binds
     if (keyIsDown(87)){
@@ -81,6 +82,7 @@ class spaceship{
   forward(){
     let force  = p5.Vector.fromAngle(this.heading,0.1);
     this.vel.add(force);
+    console.log(this.vel)
   }
 
 
@@ -119,7 +121,7 @@ class spaceship{
 class Bullet{
   constructor(x,y,heading){
     this.pos = createVector(x,y);
-    this.vel = p5.Vector.fromAngle(heading,10);
+    this.vel = p5.Vector.fromAngle(heading,15);
     this.heading = heading;
   }
 
@@ -133,6 +135,7 @@ class Bullet{
     strokeWeight(4);
     translate(this.pos.x,this.pos.y);
     rotate(this.heading);
+    scale(0.3)
     imageMode(CENTER);
     image(bulletImg, 0,0);
     pop();
@@ -145,7 +148,7 @@ class Bullet{
 let Spaceship;
 let spaceshipPos;
 let spaceshipImg;
-let background;
+let backgroundImg;
 
 //bullet variables
 let bulletArray = [];
@@ -166,7 +169,7 @@ function setup() {
 
 //draw 
 function draw() {
-  background(220);
+  background(0);
   Spaceship.update();
   Spaceship.display();
   Spaceship.turn();
