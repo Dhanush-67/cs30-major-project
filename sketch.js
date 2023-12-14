@@ -74,6 +74,7 @@ class spaceship{
     for (let bullet of bulletArray) {
       bullet.display();
       bullet.update();
+      bullet.isdead();
     }
   }
   
@@ -82,7 +83,6 @@ class spaceship{
   forward(){
     let force  = p5.Vector.fromAngle(this.heading,0.1);
     this.vel.add(force);
-    console.log(this.vel);
   }
 
 
@@ -140,6 +140,36 @@ class Bullet{
     image(bulletImg, 0,0);
     pop();
   }
+
+  isdead() {
+    // check if the bullet is still on the screen
+    for (let x = bulletArray.length-1; x >= 0; x--) {
+      if(bulletArray[x].pos.y+bulletImg.height <0 || bulletArray[x].pos.y-bulletImg.height > height || bulletArray[x].pos.x-bulletImg.height > width || bulletArray[x].pos.x+bulletImg.height < 0 ){
+        bulletArray.splice(bulletArray[x],1);
+      }
+    }
+  }
+}
+
+class Asteroid{
+  constructor(){
+    this.pos = createVector(random(0,150),random(height));
+    this.vel = p5.Vector.random2D();
+    this.r = random(2,20);
+  }
+
+  update(){
+    this.pos.add(this.vel);
+  }
+
+  display(){
+    push();
+    fill("red");
+    translate(this.pos.x, this.pos.y);
+    ellipse(0,0,this.r*2);
+    pop();
+
+  }
 }
 
 
@@ -175,6 +205,9 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   spaceshipPos = createVector(windowWidth/2,windowHeight/2);
   Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y, spaceshipImg3);
+  for (let i = 0; i < 10; i++) {
+    asteroidArray.push(new Asteroid());
+  }
 }
 
 //draw 
@@ -184,6 +217,11 @@ function draw() {
   Spaceship.display();
   Spaceship.turn();
   Spaceship.edges();
+
+  for (let i = 0; i < asteroidArray.length; i++) {
+    asteroidArray[i].display();
+    asteroidArray[i].update();
+  }
 }
 
 //functions
