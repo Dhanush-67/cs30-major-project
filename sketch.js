@@ -121,7 +121,7 @@ class spaceship{
 class Bullet{
   constructor(x,y,heading){
     this.pos = createVector(x,y);
-    this.vel = p5.Vector.fromAngle(heading,5);
+    this.vel = p5.Vector.fromAngle(heading,10);
     this.heading = heading;
   }
 
@@ -174,7 +174,7 @@ function preload(){
 function setup() {
   createCanvas(windowWidth, windowHeight);
   spaceshipPos = createVector(windowWidth/2,windowHeight/2);
-  Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y, spaceshipImg);
+  Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y, spaceshipImg3);
 }
 
 //draw 
