@@ -121,7 +121,7 @@ class spaceship{
 class Bullet{
   constructor(x,y,heading){
     this.pos = createVector(x,y);
-    this.vel = p5.Vector.fromAngle(heading,10);
+    this.vel = p5.Vector.fromAngle(heading,15);
     this.heading = heading;
   }
 
@@ -155,7 +155,7 @@ class Asteroid{
   constructor(){
     this.pos = createVector(random(0,150),random(height));
     this.vel = p5.Vector.random2D();
-    this.r = random(2,20);
+    this.r = random(5,20);
   }
 
   update(){
@@ -168,7 +168,21 @@ class Asteroid{
     translate(this.pos.x, this.pos.y);
     ellipse(0,0,this.r*2);
     pop();
+  }
 
+  edges(){
+    if (this.pos.x > width + this.size){
+      this.pos.x = -10;
+    }
+    else if (this.pos.x < -this.size){
+      this.pos.x = width + this.size;
+    }
+    if (this.pos.y > height + this.size){
+      this.pos.y = -10;
+    }
+    else if (this.pos.y < -this.size){
+      this.pos.y = height + this.size;
+    }
   }
 }
 
@@ -221,6 +235,7 @@ function draw() {
   for (let i = 0; i < asteroidArray.length; i++) {
     asteroidArray[i].display();
     asteroidArray[i].update();
+    asteroidArray[i].edges();
   }
 }
 
