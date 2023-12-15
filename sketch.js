@@ -153,9 +153,9 @@ class Bullet{
 
 class Asteroid{
   constructor(){
-    this.pos = createVector(random(0,150),random(height));
+    this.pos = createVector(random(width),random(height));
     this.vel = p5.Vector.random2D();
-    this.r = random(5,20);
+    this.r = random(0.3,0.7);
   }
 
   update(){
@@ -164,9 +164,10 @@ class Asteroid{
 
   display(){
     push();
-    fill("red");
     translate(this.pos.x, this.pos.y);
-    ellipse(0,0,this.r*2);
+    imageMode(CENTER);
+    scale(this.r);
+    image(asteroidImg, 0,0);
     pop();
   }
 
@@ -204,6 +205,7 @@ let bulletImg;
 
 //Asteroid variables
 let asteroidArray= [];
+let asteroidImg;
 
 //preload
 function preload(){
@@ -211,6 +213,7 @@ function preload(){
   spaceshipImg2 = loadImage("Assets/Images/Spaceship2.png");
   spaceshipImg3 = loadImage("Assets/Images/Spaceship3.png");
   backgroundImg = loadImage("Assets/Images/space bg.png");
+  asteroidImg = loadImage("Assets/Images/Asteroid image.png");
   bulletImg = loadImage("Assets/Images/bullet.gif");
 }
 
