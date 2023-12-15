@@ -171,17 +171,17 @@ class Asteroid{
   }
 
   edges(){
-    if (this.pos.x > width + this.size){
-      this.pos.x = -10;
+    if (this.pos.x > width + this.r){
+      this.pos.x = -this.r;
     }
-    else if (this.pos.x < -this.size){
-      this.pos.x = width + this.size;
+    else if (this.pos.x < -this.r){
+      this.pos.x = width + this.r;
     }
-    if (this.pos.y > height + this.size){
-      this.pos.y = -10;
+    if (this.pos.y > height + this.r){
+      this.pos.y = -this.r;
     }
-    else if (this.pos.y < -this.size){
-      this.pos.y = height + this.size;
+    else if (this.pos.y < -this.r){
+      this.pos.y = height + this.r;
     }
   }
 }
@@ -208,8 +208,8 @@ let asteroidArray= [];
 //preload
 function preload(){
   spaceshipImg = loadImage("Assets/Images/Spaceship image.png");
-  spaceshipImg2 = loadImage("Assets/Images/Spaceship image(2).png");
-  spaceshipImg3 = loadImage("Assets/Images/Spaceship image(3).png");
+  spaceshipImg2 = loadImage("Assets/Images/Spaceship2.png");
+  spaceshipImg3 = loadImage("Assets/Images/Spaceship3.png");
   backgroundImg = loadImage("Assets/Images/space bg.png");
   bulletImg = loadImage("Assets/Images/bullet.gif");
 }
