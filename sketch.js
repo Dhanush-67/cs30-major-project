@@ -59,7 +59,7 @@ class spaceship{
       this.forward();
     }
     this.pos.add(this.vel);
-    this.vel.mult(0.99);//air resistance basically(tho space does not have resistance)
+    this.vel.mult(0.987);//air resistance basically(tho space does not have resistance)
 
     // setting key binds
     if (keyIsDown(87)){
@@ -81,7 +81,7 @@ class spaceship{
   /*As long as "w" is pressed a new force vector of 0.1 keeps getting added to this.vel vector this is
   because the forward function is called in update function which is in the draw loop.*/
   forward(){
-    let force  = p5.Vector.fromAngle(this.heading,0.1);
+    let force  = p5.Vector.fromAngle(this.heading,0.18);
     this.vel.add(force);
   }
 
@@ -155,7 +155,8 @@ class Asteroid{
   constructor(){
     this.pos = createVector(random(width),random(height));
     this.vel = p5.Vector.random2D();
-    this.r = random(0.3,0.7);
+    this.size = random(0.3,0.7);
+    this.images = [asteroidImg,asteroidImg2];
   }
 
   update(){
@@ -166,23 +167,23 @@ class Asteroid{
     push();
     translate(this.pos.x, this.pos.y);
     imageMode(CENTER);
-    scale(this.r);
-    image(asteroidImg, 0,0);
+    scale(this.size);
+    image(this.images[0], 0,0);
     pop();
   }
 
   edges(){
-    if (this.pos.x > width + this.r){
-      this.pos.x = -this.r;
+    if (this.pos.x > width + this.size){
+      this.pos.x = -this.size;
     }
-    else if (this.pos.x < -this.r){
-      this.pos.x = width + this.r;
+    else if (this.pos.x < -this.size){
+      this.pos.x = width + this.size;
     }
-    if (this.pos.y > height + this.r){
-      this.pos.y = -this.r;
+    if (this.pos.y > height + this.size){
+      this.pos.y = -this.size;
     }
-    else if (this.pos.y < -this.r){
-      this.pos.y = height + this.r;
+    else if (this.pos.y < -this.size){
+      this.pos.y = height + this.size;
     }
   }
 }
@@ -206,6 +207,7 @@ let bulletImg;
 //Asteroid variables
 let asteroidArray= [];
 let asteroidImg;
+let asteroidImg2;
 
 //preload
 function preload(){
@@ -214,6 +216,7 @@ function preload(){
   spaceshipImg3 = loadImage("Assets/Images/Spaceship3.png");
   backgroundImg = loadImage("Assets/Images/space bg.png");
   asteroidImg = loadImage("Assets/Images/Asteroid image.png");
+  asteroidImg2 = loadImage("Assets/Images/asteroid image 2.png");
   bulletImg = loadImage("Assets/Images/bullet.gif");
 }
 
