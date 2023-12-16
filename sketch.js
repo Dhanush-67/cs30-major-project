@@ -40,9 +40,10 @@ class spaceship{
     rotate(this.heading+PI/2);
     scale(0.7)
     imageMode(CENTER);
-    image(this.img, 0,0);
+    image(this.img,0,0);
     pop();
   }
+
   
   // checks if the "w" is pressed if yes it sets isGoingForward to true
   goingForward(x){
@@ -222,7 +223,8 @@ function preload(){
 
 //setup
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  // createCanvas(windowWidth, windowHeight);
+  new Canvas();
   spaceshipPos = createVector(windowWidth/2,windowHeight/2);
   Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y, spaceshipImg3);
   for (let i = 0; i < 10; i++) {
@@ -254,8 +256,6 @@ function keyReleased() {
   Spaceship.goingForward(false);
   Spaceship.setRotation(0);
 }
-
-
 
 
 

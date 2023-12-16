@@ -10,11 +10,15 @@ let Spaceship;
 function setup(){
   createCanvas(windowWidth, windowHeight);
   createSpaceship(width/2,height/2,50,50,);
+  floor = new Sprite(250, 200, 500, 40, 'static');
 }
 
 function draw() {
   clear();
   spaceshipControls();
+  camera.x = Spaceship.x;
+  camera.y = Spaceship.y;
+
 }
 
 //Spaceship stuff
@@ -38,3 +42,5 @@ function spaceshipControls(){
   if (kb.pressing('right')) Spaceship.rotation += 5;
   if (kb.pressing('left')) Spaceship.rotation -= 5;
 }
+
+
