@@ -44,6 +44,8 @@ class spaceship{
     pop();
   }
 
+
+
   
   // checks if the "w" is pressed if yes it sets isGoingForward to true
   goingForward(x){
@@ -94,6 +96,10 @@ class spaceship{
     
   turn(){
     this.heading += this.rotation;
+  }
+
+  sayHi(){
+    circle(this.pos.x,this.pos.y,150)
   }
 
   edges(){
@@ -239,6 +245,7 @@ function draw() {
   Spaceship.display();
   Spaceship.turn();
   Spaceship.edges();
+  Spaceship.sayHi();
 
   for (let i = 0; i < asteroidArray.length; i++) {
     asteroidArray[i].display();

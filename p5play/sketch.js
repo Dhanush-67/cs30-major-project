@@ -10,7 +10,7 @@ let Spaceship;
 function setup(){
   createCanvas(windowWidth, windowHeight);
   createSpaceship(width/2,height/2,50,50,);
-  floor = new Sprite(250, 200, 500, 40, 'static');
+  
 }
 
 function draw() {
