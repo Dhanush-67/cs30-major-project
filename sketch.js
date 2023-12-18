@@ -32,15 +32,20 @@ class spaceship{
     this.isGoingForward = false;
     this.pos = createVector(x,y);
     this.img = img;
+    this.alpha = 100;
   }
 
   display(){
     push();
     translate(this.pos.x,this.pos.y);
     rotate(this.heading+PI/2);
-    scale(0.7)
+    scale(0.7);
     imageMode(CENTER);
     image(this.img,0,0);
+    //hitbox
+    noStroke();
+    fill(255,255,255,this.alpha);
+    rect(-35,-120,70,this.img.height-20);
     pop();
   }
 
@@ -98,10 +103,6 @@ class spaceship{
     this.heading += this.rotation;
   }
 
-  sayHi(){
-    circle(this.pos.x,this.pos.y,150)
-  }
-
   edges(){
     if (this.pos.x > width + this.size){
       this.pos.x = -10;
@@ -130,6 +131,7 @@ class Bullet{
     this.pos = createVector(x,y);
     this.vel = p5.Vector.fromAngle(heading,15);
     this.heading = heading;
+    this.alpha = 200;
   }
 
   update(){
@@ -145,6 +147,10 @@ class Bullet{
     rotate(this.heading);
     scale(0.3);
     image(bulletImg, 0,0);
+    //hitbox
+    noStroke();
+    fill(0,0,255,this.alpha);
+    rect(-40,-20,100,40);
     pop();
   }
 
@@ -164,6 +170,7 @@ class Asteroid{
     this.vel = p5.Vector.random2D();
     this.size = random(0.3,0.7);
     this.images = [asteroidImg,asteroidImg2];
+    this.alpha = 100;
   }
 
   update(){
@@ -176,6 +183,10 @@ class Asteroid{
     imageMode(CENTER);
     scale(this.size);
     image(this.images[0], 0,0);
+    //hitbox
+    noStroke();
+    fill(255,255,255,this.alpha);
+    circle(0,0,200);
     pop();
   }
 
@@ -245,7 +256,6 @@ function draw() {
   Spaceship.display();
   Spaceship.turn();
   Spaceship.edges();
-  Spaceship.sayHi();
 
   for (let i = 0; i < asteroidArray.length; i++) {
     asteroidArray[i].display();
