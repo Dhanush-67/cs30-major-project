@@ -171,10 +171,23 @@ class Asteroid{
     this.size = random(0.3,0.7);
     this.images = [asteroidImg,asteroidImg2];
     this.alpha = 100;
+    this.hit = false;
   }
 
   update(){
     this.pos.add(this.vel);
+  }
+
+  collide(){
+    this.collide = function(obj){
+
+      this.hit = collideRectCircle(this.x, this.y, this.w, this.h, this.pos.x, this.pos.y, 200);
+  
+      if(this.hit){
+        this.color = color(0);
+      }
+  
+    }
   }
 
   display(){
@@ -261,6 +274,7 @@ function draw() {
     asteroidArray[i].display();
     asteroidArray[i].update();
     asteroidArray[i].edges();
+    asteroidArray[i].collide(bulletArray);
   }
 }
 
