@@ -42,13 +42,10 @@ class spaceship{
     imageMode(CENTER);
     image(this.img,0,0);
     //hitbox
-    noStroke();
-    fill(255,255,255,this.alpha);
-    rect(-35,-120,70,this.img.height-20);
+    // noStroke();
+    // fill(255,255,255,this.alpha);
+    // rect(-35,-120,70,this.img.height-20);
     pop();
-    noStroke();
-    fill(255,255,255,this.alpha);
-    rect(this.pos.x-35,this.pos.y-120,70*0.7,this.img.height-20*0.7);
   }
 
 
@@ -150,9 +147,9 @@ class Bullet{
     scale(0.3);
     image(bulletImg, 0,0);
     //hitbox
-    noStroke();
-    fill(0,0,255,this.alpha);
-    rect(-40,-20,100,40);
+    // noStroke();
+    // fill(0,0,255,this.alpha);
+    // rect(-40,-20,100,40);
     pop();
   }
 
@@ -202,9 +199,9 @@ class Asteroid{
     scale(this.size);
     image(this.images[0], 0,0);
     //hitbox
-    noStroke();
-    fill(255,255,255,this.alpha);
-    circle(0,0,200);
+    // noStroke();
+    // fill(255,255,255,this.alpha);
+    // circle(0,0,200);
     pop();
   }
 

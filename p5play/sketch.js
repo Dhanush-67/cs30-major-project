@@ -5,30 +5,45 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let Spaceship;
+let spaceship;
+let bgImg;
+let spaceshipImg;
+let asteroidImg;
+let asteroidArray;
+
 
 function preload() {
-  bg = loadImage("Assets/Images/space bg.png");
+  bgImg = loadImage("Assets/Images/space bg.png");
+  spaceshipImg = loadImage("Assets/Images/Spaceship3.png");
+  asteroidImg = loadImage("Assets/Images/Asteroid image.png");
 }
 
 function setup(){
   new Canvas();
   world.friction = 1;
-  createSpaceship(width/2,height/2,50,50,);
+  createSpaceship(width/2,height/2,50,50);
   
+  for (let i = 0; i < 10; i++) {
+    asteroidArray.push(createAsteroid());
+  }
+
 }
 
 function draw() {
   clear();
-  background(bg);
-  //Spaceship.updateMovement();
+  background(bgImg);
   spaceshipControls();
+  edges();
 }
 
 //Spaceship stuff
 function createSpaceship(x,y,w,h){
-  Spaceship = new Sprite(x, y, w, h);
-  Spaceship.addImage("Assets/Images/SHIP.png");
+  spaceship = new Sprite(x, y, w, h);
+  push();
+  scale(0.9);
+  imageMode(CENTER);
+  spaceship.addImage(spaceshipImg);
+  pop();
 
 
   // Spaceship.updateMovement = function() {
@@ -53,21 +68,37 @@ function createSpaceship(x,y,w,h){
 // speed is added to the spaceship.Whatever speed it has gained it will have that speed. When "w" is
 // released then we multiply speed by a decimal number which acts as friction.
 function spaceshipControls(){
-  if (kb.pressing('up')){
-    Spaceship.direction = Spaceship.rotation-90;
-    if(Spaceship.speed < 10){
-    Spaceship.speed += 0.2;
+  if (kb.pressing("up")){
+    spaceship.direction = spaceship.rotation-90;
+    if(spaceship.speed < 15){
+      spaceship.speed += 0.1;
     }
   } 
 
   else{
-    if (Spaceship.speed > 0) {
-      Spaceship.speed *= 0.97;
+    if (spaceship.speed > 0) {
+      spaceship.speed *= 0.985;
     }
   } 
 
-  if (kb.pressing('right')) Spaceship.rotation += 5;
-  if (kb.pressing('left')) Spaceship.rotation -= 5;
+  if (kb.pressing("right"))spaceship.rotation += 4;
+  if (kb.pressing("left")) spaceship.rotation -= 4;
+}
+
+
+function edges(){
+  if (spaceship.x > width + spaceship.w){
+    spaceship.x = -30;
+  }
+  else if (spaceship.x < -spaceship.w){
+    spaceship.x = width + spaceship.w;
+  }
+  if (spaceship.y > height + spaceship.h){
+    spaceship.y = -10;
+  }
+  else if (spaceship.y < -spaceship.h){
+    spaceship.y = height + spaceship.h;
+  }
 }
 
 
