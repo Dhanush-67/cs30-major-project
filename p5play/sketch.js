@@ -7,38 +7,65 @@
 
 let Spaceship;
 
+function preload() {
+  bg = loadImage("Assets/Images/space bg.png");
+}
+
 function setup(){
-  createCanvas(windowWidth, windowHeight);
+  new Canvas();
+  world.friction = 1;
   createSpaceship(width/2,height/2,50,50,);
   
 }
 
 function draw() {
   clear();
+  background(bg);
+  //Spaceship.updateMovement();
   spaceshipControls();
-  camera.x = Spaceship.x;
-  camera.y = Spaceship.y;
-
 }
 
 //Spaceship stuff
 function createSpaceship(x,y,w,h){
   Spaceship = new Sprite(x, y, w, h);
-  Spaceship.addImage("SHIP.png");
-  //Spaceship.maxSpeed = 5;
+  Spaceship.addImage("Assets/Images/SHIP.png");
+
+
+  // Spaceship.updateMovement = function() {
+  //   if (kb.pressing('up')){
+  //     Spaceship.direction = Spaceship.rotation - 90;
+  //     if(Spaceship.speed < 10)
+  //     Spaceship.speed += 0.2;
+  //     console.log(Spaceship.vel.y);
+  //   } 
+  //   else{
+  //     if (Spaceship.speed > 0) {
+  //       Spaceship.speed *= 0.95;
+  //     }
+  //   } 
+  //   if (kb.pressing('right')) Spaceship.rotation += 5;
+  //   if (kb.pressing('left')) Spaceship.rotation -= 5;
+  // };
 }
 
+
+//when we press "w" speed gets added to the spacship until its speed reaches 10 after which no more 
+// speed is added to the spaceship.Whatever speed it has gained it will have that speed. When "w" is
+// released then we multiply speed by a decimal number which acts as friction.
 function spaceshipControls(){
   if (kb.pressing('up')){
-    Spaceship.addSpeed(0.1, Spaceship.rotation-90);
-    // Spaceship.bearing = Spaceship.rotation-90;
-    // Spaceship.applyForce(100);
-    console.log(Spaceship.vel.y);
+    Spaceship.direction = Spaceship.rotation-90;
+    if(Spaceship.speed < 10){
+    Spaceship.speed += 0.2;
+    }
   } 
+
   else{
-    Spaceship.vel.y = 0;
-    Spaceship.vel.x = 0;
+    if (Spaceship.speed > 0) {
+      Spaceship.speed *= 0.97;
+    }
   } 
+
   if (kb.pressing('right')) Spaceship.rotation += 5;
   if (kb.pressing('left')) Spaceship.rotation -= 5;
 }

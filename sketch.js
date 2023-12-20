@@ -22,7 +22,6 @@ Therefore we need to translate the object and then use rotate.*/
 
 class spaceship{
   constructor(x,y,img){
-    this.hitbox = [this.x,this.y,];
     this.dx = 0;
     this.dy = 0;
     this.size = 50;
@@ -47,6 +46,9 @@ class spaceship{
     fill(255,255,255,this.alpha);
     rect(-35,-120,70,this.img.height-20);
     pop();
+    noStroke();
+    fill(255,255,255,this.alpha);
+    rect(this.pos.x-35,this.pos.y-120,70*0.7,this.img.height-20*0.7);
   }
 
 
@@ -181,10 +183,13 @@ class Asteroid{
   collide(){
     this.collide = function(obj){
 
-      this.hit = collideRectCircle(this.x, this.y, this.w, this.h, this.pos.x, this.pos.y, 200);
+      this.hit = collideRectCircle(obj.pos.x-35, obj.pos.y-120, 70*0.7,spaceshipImg.height-20*0.7, this.pos.x, this.pos.y, 200*this.size);
   
       if(this.hit){
         this.color = color(0);
+        asteroidArray.splice(0,1)
+        this.hit = false
+        console.log("hit")
       }
   
     }
@@ -274,7 +279,7 @@ function draw() {
     asteroidArray[i].display();
     asteroidArray[i].update();
     asteroidArray[i].edges();
-    asteroidArray[i].collide(bulletArray);
+    asteroidArray[i].collide(Spaceship);
   }
 }
 
