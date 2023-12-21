@@ -20,12 +20,11 @@ function preload() {
 
 function setup(){
   new Canvas();
-  world.friction = 1;
   createSpaceship(width/2,height/2,50,50);
   
-  for (let i = 0; i < 10; i++) {
-    asteroidArray.push(createAsteroid());
-  }
+  // for (let i = 0; i < 10; i++) {
+  //   asteroidArray.push(createAsteroid());
+  // }
 
 }
 
@@ -40,7 +39,7 @@ function draw() {
 function createSpaceship(x,y,w,h){
   spaceship = new Sprite(x, y, w, h);
   push();
-  scale(0.9);
+  spaceship.scale = 0.5;
   imageMode(CENTER);
   spaceship.addImage(spaceshipImg);
   pop();
@@ -69,9 +68,11 @@ function createSpaceship(x,y,w,h){
 // released then we multiply speed by a decimal number which acts as friction.
 function spaceshipControls(){
   if (kb.pressing("up")){
-    spaceship.direction = spaceship.rotation-90;
-    if(spaceship.speed < 15){
+    spaceship.heading = spaceship.rotation-90;
+    if(spaceship.speed < 10){
       spaceship.speed += 0.1;
+      //spaceship.speed *= 0.99;
+      console.log(spaceship.speed);
     }
   } 
 
@@ -81,14 +82,20 @@ function spaceshipControls(){
     }
   } 
 
-  if (kb.pressing("right"))spaceship.rotation += 4;
-  if (kb.pressing("left")) spaceship.rotation -= 4;
+  if (kb.pressing("right")){
+    spaceship.rotation += 4;
+    spaceship.speed *= 0.96;
+  }
+  if (kb.pressing("left")){
+    spaceship.rotation -= 4;
+    spaceship.speed *= 0.96;
+  } 
 }
 
 
 function edges(){
   if (spaceship.x > width + spaceship.w){
-    spaceship.x = -30;
+    spaceship.x = -10;
   }
   else if (spaceship.x < -spaceship.w){
     spaceship.x = width + spaceship.w;
