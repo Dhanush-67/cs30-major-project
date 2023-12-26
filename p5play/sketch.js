@@ -11,29 +11,45 @@ let bgImg;
 //Spaceship stuff
 let spaceship;
 let spaceshipImg;
+let spaceshipBullets;
+let bulletImg;
 
 //Asteroid stuff
-let asteroidImg;
-let asteroidArray = [];
+let asteroidImg1;
+let asteroidImg2;
+let asteroidImg3;
+let asteroidImg4;
+let asteroidImg5;
+let asteroids;
 
 
 //preload
 function preload() {
   bgImg = loadImage("Assets/Images/space bg.png");
-  spaceshipImg = loadImage("Assets/Images/Spaceship3.png")
-  asteroidImg = loadImage("Assets/Images/Asteroid image.png")
+  spaceshipImg = loadImage("Assets/Images/Spaceship3.png");
+  bulletImg = loadImage("Assets/Images/bullet.gif")
+
+  //multiple asteroid images
+  asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
+  asteroidImg2 = loadImage("Assets/Images/Asteroid2.png");
+  asteroidImg3 = loadImage("Assets/Images/Asteroid3.png");
+  asteroidImg4 = loadImage("Assets/Images/Asteroid4.png");
+  asteroidImg5 = loadImage("Assets/Images/Asteroid5.png");
 }
 
 
 //Setup
 function setup(){
   new Canvas();
+
+  //spaceship setup stuff
   createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
-
-  new Sprite(100,300,50,50);
-
+  spaceshipBullets = new Group();
+  
+  //asteroid stuff
+  asteroids = new Group();
   for (let i = 0; i < 10; i++) {
-    asteroidArray.push(createAsteroid());
+    createAsteroid(random(width),random(height),0.5)
   }
 
 }
@@ -47,31 +63,29 @@ function draw() {
 }
 
 //Displays the asteroid
-function createAsteroid(){
-  posX = random(width)
-  posY = random(height)
-  hitbox = asteroidImg.width*0.5-80
-  asteroid = new Sprite(posX,posY,hitbox,hitbox);
-  //asteroid.set collider("circle", 0, 0, 25)
-  asteroid.debug = true;
+function createAsteroid(x, y, size) {
   push();
-  asteroid.scale = 0.5;
-  imageMode(CENTER);
-  asteroid.mass = 1
-  asteroid.addImage(asteroidImg);
+  let asteroid = new asteroids.Sprite(x,y,200);
+  asteroidSprite = random([asteroidImg1,asteroidImg2,asteroidImg3,asteroidImg4,asteroidImg5]);
+  asteroid.scale = size;
+  asteroid.addImage(asteroidSprite);
+  asteroid.debug = true;
+
   pop();
 }
 
 //Displays the spaceship
 function createSpaceship(x,y,w,h){
-  spaceship = new Sprite(x, y, w, h);
   push();
+  spaceship = new Sprite(x, y, w, h);
+  spaceship.layer = 2;
   spaceship.scale = 0.5;
   imageMode(CENTER);
   spaceship.mass = 5
   spaceship.addImage(spaceshipImg);
   spaceship.rotationLock = true
   spaceship.bounce = 5
+  spaceship.debug = true
   pop();
 
 }
@@ -82,7 +96,6 @@ function createSpaceship(x,y,w,h){
 // released then we multiply speed by a decimal number which acts as friction.
 function spaceshipControls(){
   spaceship.speed *= 0.99;
-  spaceship.debug = true
 
   if (kb.pressing("up")){
     if(spaceship.speed < 10){
@@ -90,14 +103,38 @@ function spaceshipControls(){
       spaceship.vel.y += sin(spaceship.rotation) * 0.15;
     }
   } 
-
-
   if (kb.pressing("right")){
     spaceship.rotation += 4;
   }
   if (kb.pressing("left")){
     spaceship.rotation -= 4;
   } 
+  if (kb.presses(' ')) {
+    createBullets("spaceship");
+  }
+}
+
+function createBullets(type){
+  if(type === "spaceship"){
+    let bullet = new Sprite(spaceship.position.x, spaceship.position.y,bulletImg.width-50,bulletImg.height-150);
+    bullet.scale = 0.25;
+    bullet.addImage(bulletImg);
+    bullet.layer = 1;
+
+    if(bullet.overlaps(spaceship)){
+      bullet.collider = "n";
+      bullet.remove();
+    }
+    else{
+      bullet.collider = "d";
+    }
+    
+    bullet.life = width+20;
+    bullet.rotation = spaceship.rotation;
+    bullet.speed = 12;
+    bullet.debug = debugMode;
+    spaceshipBullets.add(bullet);
+  }
 }
 
 
@@ -116,5 +153,7 @@ function edges(){
     spaceship.y = height + spaceship.h;
   }
 }
+
+
 
 
