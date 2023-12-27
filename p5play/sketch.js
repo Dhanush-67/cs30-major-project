@@ -7,6 +7,8 @@
 
 //Global variables
 let bgImg;
+let timer = 1000;
+let extraAsteroids = timer*30;
 
 //Spaceship stuff
 let spaceship;
@@ -21,6 +23,7 @@ let asteroidImg3;
 let asteroidImg4;
 let asteroidImg5;
 let asteroids;
+
 
 
 //preload
@@ -49,7 +52,7 @@ function setup(){
   //asteroid stuff
   asteroids = new Group();
   for (let i = 0; i < 10; i++) {
-    createAsteroid(random(width),random(height),0.5)
+    createAsteroid(random(width),random(height),0.35)
   }
 
 }
@@ -59,7 +62,44 @@ function draw() {
   clear();
   background(bgImg);
   spaceshipControls();
+  checkCollision();
   edges();
+  asteroidEdes();
+  globalClock();
+}
+
+//checks collisions between various objects
+function checkCollision(){
+  spaceship.collides(asteroids, spaceshipHitAsteroids);
+  spaceshipBullets.overlap(asteroids, bulletsHitAsteroids);
+}
+
+//Eexcutes various functions after a specific amount of time
+function globalClock(){
+
+  //Adds more asteroids after 30s
+  if (millis() > extraAsteroids) {
+    for (let i=0; i<10; i++) {
+      createAsteroid(random(width), random(height), 0.35)
+    } 
+    extraAsteroids = millis() + timer*30;
+  }
+}
+
+//checks collisions between asteroids and bullets
+function bulletsHitAsteroids(bullets,asteroids){
+  let minSize = asteroids.scale-0.2;
+  if (minSize>=0.1) {
+    createAsteroid(asteroids.position.x, asteroids.position.y, 0.2);
+    createAsteroid(asteroids.position.x, asteroids.position.y, 0.2);
+  }
+  bullets.remove();
+  asteroids.remove();
+}
+
+//checks collisions between asteroids and spaceship
+function spaceshipHitAsteroids(spaceship, asteroids) {
+  asteroids.remove();
 }
 
 //Displays the asteroid
@@ -67,11 +107,57 @@ function createAsteroid(x, y, size) {
   push();
   let asteroid = new asteroids.Sprite(x,y,200);
   asteroidSprite = random([asteroidImg1,asteroidImg2,asteroidImg3,asteroidImg4,asteroidImg5]);
-  asteroid.scale = size;
-  asteroid.addImage(asteroidSprite);
-  asteroid.debug = true;
 
+  //set new hitboxes for each different asteroid
+  if(asteroidSprite === asteroidImg1){
+    asteroid.removeColliders()
+    asteroid.addCollider(-5,-5, 200);
+  }
+  if(asteroidSprite === asteroidImg2){
+    asteroid.removeColliders()
+    asteroid.addCollider(-8,3, 220);
+  }
+  if(asteroidSprite === asteroidImg3){
+    asteroid.removeColliders()
+    asteroid.addCollider(5,-15,250);
+  }
+  if(asteroidSprite === asteroidImg4){
+    asteroid.removeColliders()
+    asteroid.addCollider(5,-7,220);
+  }
+  if(asteroidSprite === asteroidImg5){
+    asteroid.removeColliders()
+    asteroid.addCollider(-8,-4,220);
+  }
+
+  asteroid.scale = size;
+
+  asteroid.bounciness = 0.6;
+  spaceship.mass = 5
+  asteroid.addImage(asteroidSprite);
+  asteroid.direction = random(360);
+  asteroid.speed = random(2,7)
+  asteroid.debug = true;
   pop();
+}
+
+//if asteroid goes offscreen it spawns on the opposite side of the screen
+function asteroidEdes(){
+  for(let asteroid of asteroids){
+
+    if (asteroid.x > width + asteroid.w){
+      asteroid.x = -10;
+    }
+    else if (asteroid.x < -asteroid.w){
+      asteroid.x = width + asteroid.w;
+    }
+    if (asteroid.y > height + asteroid.h){
+      asteroid.y = -10;
+    }
+    else if (asteroid.y < -asteroid.h){
+      asteroid.y = height + asteroid.h;
+    }
+    }
 }
 
 //Displays the spaceship
@@ -79,12 +165,11 @@ function createSpaceship(x,y,w,h){
   push();
   spaceship = new Sprite(x, y, w, h);
   spaceship.layer = 2;
-  spaceship.scale = 0.5;
+  spaceship.scale = 0.4;
   imageMode(CENTER);
-  spaceship.mass = 5
+  spaceship.mass = 2
   spaceship.addImage(spaceshipImg);
   spaceship.rotationLock = true
-  spaceship.bounce = 5
   spaceship.debug = true
   pop();
 
@@ -114,10 +199,11 @@ function spaceshipControls(){
   }
 }
 
+//creates bullets that get destroyed when it hits the asteroids
 function createBullets(type){
   if(type === "spaceship"){
     let bullet = new Sprite(spaceship.position.x, spaceship.position.y,bulletImg.width-50,bulletImg.height-150);
-    bullet.scale = 0.25;
+    bullet.scale = 0.2;
     bullet.addImage(bulletImg);
     bullet.layer = 1;
 
