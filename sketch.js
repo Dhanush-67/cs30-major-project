@@ -1,295 +1,270 @@
 // Project Title
-// Dhanush Rai
+// Your Name
 // Date
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-//Things to remeber
-/* the from angle function only uses radians while others can be in degrees or rads. The from angle function draws a vector from a 
-point to a certain degree from the x axis to a certain length. We need to input the degrees and length of the vector. The heading function
-gives us the degrees we turned the object by. The rotate function roates the object by a certain degree in respect to the origin.
-Therefore we need to translate the object and then use rotate.*/
+//Global variables
+let bgImg;
+let timer = 1000;
+let extraAsteroids = timer*30;
 
-// order of code
-// class constructors
-// global variables
-// preload
-// setup 
-// draw
-// functions
-
-
-class spaceship{
-  constructor(x,y,img){
-    this.dx = 0;
-    this.dy = 0;
-    this.size = 50;
-    this.heading = 0;
-    this.rotation = 0;
-    this.vel = createVector(0,0);
-    this.isGoingForward = false;
-    this.pos = createVector(x,y);
-    this.img = img;
-    this.alpha = 100;
-  }
-
-  display(){
-    push();
-    translate(this.pos.x,this.pos.y);
-    rotate(this.heading+PI/2);
-    scale(0.7);
-    imageMode(CENTER);
-    image(this.img,0,0);
-    //hitbox
-    // noStroke();
-    // fill(255,255,255,this.alpha);
-    // rect(-35,-120,70,this.img.height-20);
-    pop();
-  }
-
-
-
-  
-  // checks if the "w" is pressed if yes it sets isGoingForward to true
-  goingForward(x){
-    this.isGoingForward = x;
-  }
-
-  
-  update(){
-    /* adds the force vector to the vel vector which is then added to the pos vector. Then the vel vector
-    is mult by 0.98(this number must be quite smaller compared to the rate of force vector being 
-    added else the spaceshipwon't move much) to slowly reduce the vel vector and if no more force 
-    vector is added the vel vector approaches 0 which causes the spaceship to stop*/
-    if (this.isGoingForward){    
-      this.forward();
-    }
-    this.pos.add(this.vel);
-    this.vel.mult(0.987);//air resistance basically(tho space does not have resistance)
-
-    // setting key binds
-    if (keyIsDown(87)){
-      Spaceship.goingForward(true);
-    }
-    if (keyIsDown(68)) {
-      Spaceship.setRotation(0.09);
-    }
-    if(keyIsDown(65)) {
-      Spaceship.setRotation(-0.09);
-    }
-    for (let bullet of bulletArray) {
-      bullet.display();
-      bullet.update();
-      bullet.isdead();
-    }
-  }
-  
-  /*As long as "w" is pressed a new force vector of 0.1 keeps getting added to this.vel vector this is
-  because the forward function is called in update function which is in the draw loop.*/
-  forward(){
-    let force  = p5.Vector.fromAngle(this.heading,0.18);
-    this.vel.add(force);
-  }
-
-
-  setRotation(a){
-    this.rotation = a;
-  }
-
-    
-  turn(){
-    this.heading += this.rotation;
-  }
-
-  edges(){
-    if (this.pos.x > width + this.size){
-      this.pos.x = -10;
-    }
-    else if (this.pos.x < -this.size){
-      this.pos.x = width + this.size;
-    }
-    if (this.pos.y > height + this.size){
-      this.pos.y = -10;
-    }
-    else if (this.pos.y < -this.size){
-      this.pos.y = height + this.size;
-    }
-  }
-
-  handleKeyPress() {
-    if (keyIsDown(32)){
-      let bullet = new Bullet(this.pos.x, this.pos.y,this.heading);
-      bulletArray.push(bullet);
-    }
-  }
-}
-
-class Bullet{
-  constructor(x,y,heading){
-    this.pos = createVector(x,y);
-    this.vel = p5.Vector.fromAngle(heading,15);
-    this.heading = heading;
-    this.alpha = 200;
-  }
-
-  update(){
-    this.pos.add(this.vel);
-  }
-
-  display(){
-    push();
-    stroke("blue");
-    strokeWeight(4);
-    imageMode(CENTER);
-    translate(this.pos.x,this.pos.y);
-    rotate(this.heading);
-    scale(0.3);
-    image(bulletImg, 0,0);
-    //hitbox
-    // noStroke();
-    // fill(0,0,255,this.alpha);
-    // rect(-40,-20,100,40);
-    pop();
-  }
-
-  isdead() {
-    // check if the bullet is still on the screen
-    for (let x = bulletArray.length-1; x >= 0; x--) {
-      if(bulletArray[x].pos.y+bulletImg.height <0 || bulletArray[x].pos.y-bulletImg.height > height || bulletArray[x].pos.x-bulletImg.height > width || bulletArray[x].pos.x+bulletImg.height < 0 ){
-        bulletArray.splice(bulletArray[x],1);
-      }
-    }
-  }
-}
-
-class Asteroid{
-  constructor(){
-    this.pos = createVector(random(width),random(height));
-    this.vel = p5.Vector.random2D();
-    this.size = random(0.3,0.7);
-    this.images = [asteroidImg,asteroidImg2];
-    this.alpha = 100;
-    this.hit = false;
-  }
-
-  update(){
-    this.pos.add(this.vel);
-  }
-
-  collide(){
-    this.collide = function(obj){
-
-      this.hit = collideRectCircle(obj.pos.x-35, obj.pos.y-120, 70*0.7,spaceshipImg.height-20*0.7, this.pos.x, this.pos.y, 200*this.size);
-  
-      if(this.hit){
-        this.color = color(0);
-        asteroidArray.splice(0,1)
-        this.hit = false
-        console.log("hit")
-      }
-  
-    }
-  }
-
-  display(){
-    push();
-    translate(this.pos.x, this.pos.y);
-    imageMode(CENTER);
-    scale(this.size);
-    image(this.images[0], 0,0);
-    //hitbox
-    // noStroke();
-    // fill(255,255,255,this.alpha);
-    // circle(0,0,200);
-    pop();
-  }
-
-  edges(){
-    if (this.pos.x > width + this.size){
-      this.pos.x = -this.size;
-    }
-    else if (this.pos.x < -this.size){
-      this.pos.x = width + this.size;
-    }
-    if (this.pos.y > height + this.size){
-      this.pos.y = -this.size;
-    }
-    else if (this.pos.y < -this.size){
-      this.pos.y = height + this.size;
-    }
-  }
-}
-
-
-
-//global variables
-//spaceship variables
-let Spaceship;
-let spaceshipPos;
+//Spaceship stuff
+let spaceship;
 let spaceshipImg;
-let spaceshipImg2;
-let spaceshipImg3;
-let backgroundImg;
-
-
-//bullet variables
-let bulletArray = [];
+let spaceshipMoveImg1;
+let spaceshipMoveImg2;
+let spaceshipBullets;
 let bulletImg;
 
-//Asteroid variables
-let asteroidArray= [];
-let asteroidImg;
+//Asteroid stuff
+let asteroidImg1;
 let asteroidImg2;
+let asteroidImg3;
+let asteroidImg4;
+let asteroidImg5;
+let particleImg;
+let asteroids;
+
+
 
 //preload
-function preload(){
-  spaceshipImg = loadImage("Assets/Images/Spaceship image.png");
-  spaceshipImg2 = loadImage("Assets/Images/Spaceship2.png");
-  spaceshipImg3 = loadImage("Assets/Images/Spaceship3.png");
-  backgroundImg = loadImage("Assets/Images/space bg.png");
-  asteroidImg = loadImage("Assets/Images/Asteroid image.png");
-  asteroidImg2 = loadImage("Assets/Images/asteroid image 2.png");
-  bulletImg = loadImage("Assets/Images/bullet.gif");
+function preload() {
+  bgImg = loadImage("Assets/Images/space bg.png");
+  spaceshipImg = loadImage("Assets/Images/Spaceship3.png");
+  bulletImg = loadImage("Assets/Images/bullet.gif")
+  spaceshipMoveImg1 = loadImage("Assets/Images/Spaceship with fire 1.png");
+  spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
+
+  //multiple asteroid images
+  asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
+  asteroidImg2 = loadImage("Assets/Images/Asteroid2.png");
+  asteroidImg3 = loadImage("Assets/Images/Asteroid3.png");
+  asteroidImg4 = loadImage("Assets/Images/Asteroid4.png");
+  asteroidImg5 = loadImage("Assets/Images/Asteroid5.png");
+  particleImg = loadImage("Assets/Images/particle.png");
 }
 
-//setup
-function setup() {
-  // createCanvas(windowWidth, windowHeight);
+
+//Setup
+function setup(){
   new Canvas();
-  spaceshipPos = createVector(windowWidth/2,windowHeight/2);
-  Spaceship = new spaceship(spaceshipPos.x,spaceshipPos.y, spaceshipImg3);
+
+  //spaceship setup stuff
+  createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
+  spaceshipBullets = new Group();
+  
+  // asteroid stuff
+  asteroids = new Group();
   for (let i = 0; i < 10; i++) {
-    asteroidArray.push(new Asteroid());
+    createAsteroid(random(width),random(height),0.35)
   }
+
 }
 
-//draw 
+//Draw loop
 function draw() {
-  background(backgroundImg);
-  Spaceship.update();
-  Spaceship.display();
-  Spaceship.turn();
-  Spaceship.edges();
+  clear();
+  background(bgImg);
+  spaceshipControls();
+  checkCollision();
+  edges();
+  asteroidEdes();
+  globalClock();
+}
 
-  for (let i = 0; i < asteroidArray.length; i++) {
-    asteroidArray[i].display();
-    asteroidArray[i].update();
-    asteroidArray[i].edges();
-    asteroidArray[i].collide(Spaceship);
+//checks collisions between various objects
+function checkCollision(){
+  spaceship.collides(asteroids, spaceshipHitAsteroids);
+  spaceshipBullets.collides(asteroids, bulletsHitAsteroids);
+}
+
+//Eexcutes various functions after a specific amount of time
+function globalClock(){
+
+  //Adds more asteroids after 30s
+  if (millis() > extraAsteroids) {
+    for (let i=0; i<10; i++) {
+      createAsteroid(random(width), random(height), 0.35)
+    } 
+    extraAsteroids = millis() + timer*30;
   }
 }
 
-//functions
-function keyPressed() {
-  Spaceship.handleKeyPress();
+//checks collisions between asteroids and bullets
+function bulletsHitAsteroids(bullets,asteroids){
+
+  for(let i = 0; i < 10; i++){
+    particle = createSprite(asteroids.position.x, asteroids.position.y);
+    particle.removeColliders();
+    particle.addImage(particleImg);
+    particle.direction = random(360);
+    particle.speed = random(2,7)
+    particle.life = 10;
+    particle.scale = 0.25;
+  }
+
+  let minSize = asteroids.scale-0.2;
+  if (minSize>=0.1) {
+    createAsteroid(asteroids.position.x, asteroids.position.y, 0.2);
+    createAsteroid(asteroids.position.x, asteroids.position.y, 0.2);
+  }
+  bullets.remove();
+  asteroids.remove();
 }
 
-function keyReleased() {
-  Spaceship.goingForward(false);
-  Spaceship.setRotation(0);
+//checks collisions between asteroids and spaceship
+function spaceshipHitAsteroids(spaceship, asteroids) {
+  for(let i = 0; i < 10; i++){
+    particle = createSprite(asteroids.position.x, asteroids.position.y);
+    particle.removeColliders();
+    particle.addImage(particleImg);
+    particle.direction = random(360);
+    particle.speed = random(2,4)
+    particle.life = 15;
+    particle.scale = 0.25;
+  }
+  asteroids.remove();
+}
+
+//Displays the asteroid
+function createAsteroid(x, y, size) {
+  push();
+  let asteroid = new asteroids.Sprite(x,y,200);
+  asteroidSprite = random([asteroidImg1,asteroidImg2,asteroidImg3,asteroidImg4,asteroidImg5]);
+
+  //set new hitboxes for each different asteroid
+  if(asteroidSprite === asteroidImg1){
+    asteroid.removeColliders()
+    asteroid.addCollider(-5,-5, 200);
+  }
+  if(asteroidSprite === asteroidImg2){
+    asteroid.removeColliders()
+    asteroid.addCollider(-8,3, 220);
+  }
+  if(asteroidSprite === asteroidImg3){
+    asteroid.removeColliders()
+    asteroid.addCollider(5,-15,250);
+  }
+  if(asteroidSprite === asteroidImg4){
+    asteroid.removeColliders()
+    asteroid.addCollider(5,-7,220);
+  }
+  if(asteroidSprite === asteroidImg5){
+    asteroid.removeColliders()
+    asteroid.addCollider(-8,-4,220);
+  }
+
+  asteroid.scale = size;
+  asteroid.addImage(asteroidSprite);
+  asteroid.bounciness = 0.6;
+  spaceship.mass = 5
+  asteroid.direction = random(360);
+  asteroid.speed = random(2,7)
+  pop();
+}
+
+//if asteroid goes offscreen it spawns on the opposite side of the screen
+function asteroidEdes(){
+  for(let asteroid of asteroids){
+
+    if (asteroid.x > width + asteroid.w){
+      asteroid.x = -10;
+    }
+    else if (asteroid.x < -asteroid.w){
+      asteroid.x = width + asteroid.w;
+    }
+    if (asteroid.y > height + asteroid.h){
+      asteroid.y = -10;
+    }
+    else if (asteroid.y < -asteroid.h){
+      asteroid.y = height + asteroid.h;
+    }
+    }
+}
+
+//Displays the spaceship
+function createSpaceship(x,y,w,h){
+  push();
+  spaceship = new Sprite(x, y, w, h);
+  spaceship.layer = 2;
+  spaceship.scale = 0.4;
+  imageMode(CENTER);
+  spaceship.mass = 2
+  spaceship.addAni("idle",spaceshipImg);
+  spaceship.addAni("moving", spaceshipMoveImg1,spaceshipMoveImg1,spaceshipMoveImg2);
+  spaceship.rotationLock = true
+  pop();
+
 }
 
 
+// when we press "w" speed gets added to the spacship until its speed reaches 10 after which no more 
+// speed is added to the spaceship.Whatever speed it has gained it will have that speed. When "w" is
+// released then we multiply speed by a decimal number which acts as friction.
+function spaceshipControls(){
+  spaceship.speed *= 0.99;
+
+  if (kb.pressing("up")){
+    if(spaceship.speed < 10){
+      spaceship.vel.x += cos(spaceship.rotation) * 0.15;
+      spaceship.vel.y += sin(spaceship.rotation) * 0.15;
+    }
+    spaceship.changeAni("moving");
+  } 
+  else{
+    spaceship.changeAni("idle");
+  }
+  if (kb.pressing("right")){
+    spaceship.rotation += 0.09;
+  }
+  if (kb.pressing("left")){
+    spaceship.rotation -= 0.09;
+  } 
+  if (kb.presses(' ')) {
+    createBullets("spaceship");
+  }
+}
+
+//creates bullets that get destroyed when it hits the asteroids
+function createBullets(type){
+  if(type === "spaceship"){
+    let bullet = new Sprite(spaceship.position.x, spaceship.position.y,bulletImg.width-50,bulletImg.height-150);
+    bullet.scale = 0.2;
+    bullet.addImage(bulletImg);
+    bullet.layer = 1;
+
+    if(bullet.overlaps(spaceship)){
+      bullet.collider = "n";
+      bullet.remove();
+    }
+    else{
+      bullet.collider = "d";
+    }
+    
+    bullet.life = width+20;
+    bullet.rotation = spaceship.rotation;
+    bullet.speed = 12;
+    spaceshipBullets.add(bullet);
+  }
+}
+
+
+// if object goes beyond the screen it spawns on the opposite side of the screen
+function edges(){
+  if (spaceship.x > width + spaceship.w){
+    spaceship.x = -10;
+  }
+  else if (spaceship.x < -spaceship.w){
+    spaceship.x = width + spaceship.w;
+  }
+  if (spaceship.y > height + spaceship.h){
+    spaceship.y = -10;
+  }
+  else if (spaceship.y < -spaceship.h){
+    spaceship.y = height + spaceship.h;
+  }
+}
 
 

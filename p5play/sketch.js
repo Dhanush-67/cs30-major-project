@@ -13,6 +13,8 @@ let extraAsteroids = timer*30;
 //Spaceship stuff
 let spaceship;
 let spaceshipImg;
+let spaceshipMoveImg1;
+let spaceshipMoveImg2;
 let spaceshipBullets;
 let bulletImg;
 
@@ -22,6 +24,7 @@ let asteroidImg2;
 let asteroidImg3;
 let asteroidImg4;
 let asteroidImg5;
+let particleImg;
 let asteroids;
 
 
@@ -31,6 +34,8 @@ function preload() {
   bgImg = loadImage("Assets/Images/space bg.png");
   spaceshipImg = loadImage("Assets/Images/Spaceship3.png");
   bulletImg = loadImage("Assets/Images/bullet.gif")
+  spaceshipMoveImg1 = loadImage("Assets/Images/Spaceship with fire 1.png");
+  spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
 
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
@@ -38,6 +43,7 @@ function preload() {
   asteroidImg3 = loadImage("Assets/Images/Asteroid3.png");
   asteroidImg4 = loadImage("Assets/Images/Asteroid4.png");
   asteroidImg5 = loadImage("Assets/Images/Asteroid5.png");
+  particleImg = loadImage("Assets/Images/particle.png");
 }
 
 
@@ -49,7 +55,7 @@ function setup(){
   createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
   spaceshipBullets = new Group();
   
-  //asteroid stuff
+  // asteroid stuff
   asteroids = new Group();
   for (let i = 0; i < 10; i++) {
     createAsteroid(random(width),random(height),0.35)
@@ -71,7 +77,7 @@ function draw() {
 //checks collisions between various objects
 function checkCollision(){
   spaceship.collides(asteroids, spaceshipHitAsteroids);
-  spaceshipBullets.overlap(asteroids, bulletsHitAsteroids);
+  spaceshipBullets.collides(asteroids, bulletsHitAsteroids);
 }
 
 //Eexcutes various functions after a specific amount of time
@@ -88,6 +94,17 @@ function globalClock(){
 
 //checks collisions between asteroids and bullets
 function bulletsHitAsteroids(bullets,asteroids){
+
+  for(let i = 0; i < 10; i++){
+    particle = createSprite(asteroids.position.x, asteroids.position.y);
+    particle.removeColliders();
+    particle.addImage(particleImg);
+    particle.direction = random(360);
+    particle.speed = random(2,7)
+    particle.life = 10;
+    particle.scale = 0.25;
+  }
+
   let minSize = asteroids.scale-0.2;
   if (minSize>=0.1) {
     createAsteroid(asteroids.position.x, asteroids.position.y, 0.2);
@@ -99,6 +116,15 @@ function bulletsHitAsteroids(bullets,asteroids){
 
 //checks collisions between asteroids and spaceship
 function spaceshipHitAsteroids(spaceship, asteroids) {
+  for(let i = 0; i < 10; i++){
+    particle = createSprite(asteroids.position.x, asteroids.position.y);
+    particle.removeColliders();
+    particle.addImage(particleImg);
+    particle.direction = random(360);
+    particle.speed = random(2,4)
+    particle.life = 15;
+    particle.scale = 0.25;
+  }
   asteroids.remove();
 }
 
@@ -131,13 +157,11 @@ function createAsteroid(x, y, size) {
   }
 
   asteroid.scale = size;
-
+  asteroid.addImage(asteroidSprite);
   asteroid.bounciness = 0.6;
   spaceship.mass = 5
-  asteroid.addImage(asteroidSprite);
   asteroid.direction = random(360);
   asteroid.speed = random(2,7)
-  asteroid.debug = true;
   pop();
 }
 
@@ -168,9 +192,9 @@ function createSpaceship(x,y,w,h){
   spaceship.scale = 0.4;
   imageMode(CENTER);
   spaceship.mass = 2
-  spaceship.addImage(spaceshipImg);
+  spaceship.addAni("idle",spaceshipImg);
+  spaceship.addAni("moving", spaceshipMoveImg1,spaceshipMoveImg1,spaceshipMoveImg2);
   spaceship.rotationLock = true
-  spaceship.debug = true
   pop();
 
 }
@@ -187,7 +211,11 @@ function spaceshipControls(){
       spaceship.vel.x += cos(spaceship.rotation) * 0.15;
       spaceship.vel.y += sin(spaceship.rotation) * 0.15;
     }
+    spaceship.changeAni("moving");
   } 
+  else{
+    spaceship.changeAni("idle");
+  }
   if (kb.pressing("right")){
     spaceship.rotation += 4;
   }
@@ -218,7 +246,6 @@ function createBullets(type){
     bullet.life = width+20;
     bullet.rotation = spaceship.rotation;
     bullet.speed = 12;
-    bullet.debug = debugMode;
     spaceshipBullets.add(bullet);
   }
 }
