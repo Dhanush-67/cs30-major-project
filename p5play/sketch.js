@@ -9,6 +9,12 @@
 let bgImg;
 let timer = 1000;
 let extraAsteroids = timer*30;
+let planet;
+let planetImg;
+let planetHP;
+let score;
+let state = "space mode";
+let introImg;
 
 //Spaceship stuff
 let spaceship;
@@ -16,6 +22,13 @@ let spaceshipImg;
 let spaceshipMoveImg1;
 let spaceshipMoveImg2;
 let spaceshipBullets;
+let spawnWidth1;
+let spawnWidth2;
+let spawnWidthArray = [];
+let spawnHeight1 = 100;
+let spawnHeight2 = 500;
+let spawnHeightArray = [];
+let spaceshipHP;
 let bulletImg;
 
 //Asteroid stuff
@@ -36,6 +49,8 @@ function preload() {
   bulletImg = loadImage("Assets/Images/bullet.gif")
   spaceshipMoveImg1 = loadImage("Assets/Images/Spaceship with fire 1.png");
   spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
+  planetImg = loadImage("Assets/Images/planet.webp");
+  introImg = loadImage("Assets/Images/Intro pic.jpeg");
 
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
@@ -46,19 +61,30 @@ function preload() {
   particleImg = loadImage("Assets/Images/particle.png");
 }
 
+if (state === "space mode"){
 
-//Setup
+  //Setup
 function setup(){
   new Canvas();
 
   //spaceship setup stuff
   createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
   spaceshipBullets = new Group();
+  createPlanet(width/2,height/2);
   
   // asteroid stuff
   asteroids = new Group();
-  for (let i = 0; i < 10; i++) {
-    createAsteroid(random(width),random(height),0.35)
+  
+  for (let i = 0; i < 5; i++) {
+    spawnWidth1 = random(300);
+    spawnWidth2 = random(900,width)
+    spawnWidthArray.push(spawnWidth1)
+    spawnWidthArray.push(spawnWidth2)
+    spawnHeight1 = random(100);
+    spawnHeight2 = random(500,height)
+    spawnHeightArray.push(spawnHeight1)
+    spawnHeightArray.push(spawnHeight2)
+    createAsteroid(random(spawnWidthArray),random(spawnHeightArray),0.35)
   }
 
 }
@@ -71,13 +97,15 @@ function draw() {
   checkCollision();
   edges();
   asteroidEdes();
-  globalClock();
+  // globalClock();
+  stateCheck();
 }
 
 //checks collisions between various objects
 function checkCollision(){
   spaceship.collides(asteroids, spaceshipHitAsteroids);
   spaceshipBullets.collides(asteroids, bulletsHitAsteroids);
+  planet.collides(asteroids,planetHitAsteroids)
 }
 
 //Eexcutes various functions after a specific amount of time
@@ -86,10 +114,53 @@ function globalClock(){
   //Adds more asteroids after 30s
   if (millis() > extraAsteroids) {
     for (let i=0; i<10; i++) {
-      createAsteroid(random(width), random(height), 0.35)
+      createAsteroid(random(spawnWidthArray), random(spawnHeightArray), 0.35)
     } 
     extraAsteroids = millis() + timer*30;
   }
+}
+
+function stateCheck(){
+  if(asteroids.length === 0){
+    state = "planet mode"
+  }
+}
+
+
+function createPlanet(x,y){
+  push();
+  planet = new Sprite(x, y,1800);
+  planet.layer = 1;
+  planet.scale = 0.1;
+  if(spaceship.overlaps(planet)){
+    planet.collider = "n";
+  }
+  else if(spaceshipBullets.overlaps(planet)){
+    planet.collider = "n"
+  }
+  else{
+    planet.collider = "s";
+  }
+  imageMode(CENTER);
+  planet.addImage(planetImg)
+  planet.mass = 2
+  planet.debug = true;
+  pop();
+}
+
+function planetHitAsteroids(planet,asteroids){
+
+  for(let i = 0; i < 10; i++){
+    particle = createSprite(asteroids.position.x, asteroids.position.y);
+    particle.removeColliders();
+    particle.addImage(particleImg);
+    particle.direction = random(360);
+    particle.speed = random(2,7)
+    particle.life = 10;
+    particle.scale = 0.25;
+  }
+
+  asteroids.remove();
 }
 
 //checks collisions between asteroids and bullets
@@ -162,6 +233,7 @@ function createAsteroid(x, y, size) {
   spaceship.mass = 5
   asteroid.direction = random(360);
   asteroid.speed = random(2,7)
+  asteroid.debug = true;
   pop();
 }
 
@@ -195,8 +267,8 @@ function createSpaceship(x,y,w,h){
   spaceship.addAni("idle",spaceshipImg);
   spaceship.addAni("moving", spaceshipMoveImg1,spaceshipMoveImg1,spaceshipMoveImg2);
   spaceship.rotationLock = true
+  spaceship.debug = true;
   pop();
-
 }
 
 
@@ -246,6 +318,7 @@ function createBullets(type){
     bullet.life = width+20;
     bullet.rotation = spaceship.rotation;
     bullet.speed = 12;
+    bullet.debug = true;
     spaceshipBullets.add(bullet);
   }
 }
@@ -266,6 +339,17 @@ function edges(){
     spaceship.y = height + spaceship.h;
   }
 }
+}
+else if(state === "planet mode"){
+  function setup(){
+    new Canvas();
+  }
+  function draw() {
+    clear();
+    background(bgImg);
+  }
+  }
+
 
 
 
