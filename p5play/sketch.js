@@ -15,6 +15,7 @@ let planetHP;
 let score;
 let state = "space mode";
 let introImg;
+let player;
 
 //Spaceship stuff
 let spaceship;
@@ -61,7 +62,6 @@ function preload() {
   particleImg = loadImage("Assets/Images/particle.png");
 }
 
-if (state === "space mode"){
 
   //Setup
 function setup(){
@@ -75,7 +75,7 @@ function setup(){
   // asteroid stuff
   asteroids = new Group();
   
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 2; i++) {
     spawnWidth1 = random(300);
     spawnWidth2 = random(900,width)
     spawnWidthArray.push(spawnWidth1)
@@ -91,15 +91,37 @@ function setup(){
 
 //Draw loop
 function draw() {
-  clear();
+  stateCheck();
+  if(state === "space mode"){
+    clear();
   background(bgImg);
   spaceshipControls();
   checkCollision();
   edges();
   asteroidEdes();
+  spaceActive = true;
   // globalClock();
-  stateCheck();
+  }
+
+  else{
+    clear()
+    background("black")
+    spaceship.remove();
+    planet.remove();
+    createPlayer();
 }
+}
+
+function createPlayer(){
+  if(state === "planet mode" && !player === true){
+  player = new Sprite(random(width),random(height));
+  if(player.pos.x <1000){
+    console.log("hi")
+    state = "space mode"
+  }
+}
+}
+
 
 //checks collisions between various objects
 function checkCollision(){
@@ -120,10 +142,17 @@ function globalClock(){
   }
 }
 
+let spaceActive = true;
 function stateCheck(){
-  if(asteroids.length === 0){
-    state = "planet mode"
+  if(asteroids.length === 0 && spaceActive){
+    state = "planet mode";
+    spaceActive = false;
   }
+
+  // if(state === "planet mode"){
+  //   console.log("run")
+
+  // }
 }
 
 
@@ -339,18 +368,3 @@ function edges(){
     spaceship.y = height + spaceship.h;
   }
 }
-}
-else if(state === "planet mode"){
-  function setup(){
-    new Canvas();
-  }
-  function draw() {
-    clear();
-    background(bgImg);
-  }
-  }
-
-
-
-
-
