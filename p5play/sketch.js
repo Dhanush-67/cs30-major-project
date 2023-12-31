@@ -8,14 +8,16 @@
 //Global variables
 let bgImg;
 let timer = 1000;
-let extraAsteroids = timer*30;
+let extraAsteroids = timer*10;
 let planet;
 let planetImg;
 let planetHP;
 let score;
-let state = "space mode";
 let introImg;
-let player;
+let state = "space mode"
+let changeState = false;
+let player = true;
+let particle;
 
 //Spaceship stuff
 let spaceship;
@@ -75,7 +77,7 @@ function setup(){
   // asteroid stuff
   asteroids = new Group();
   
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 5; i++) {
     spawnWidth1 = random(300);
     spawnWidth2 = random(900,width)
     spawnWidthArray.push(spawnWidth1)
@@ -91,43 +93,66 @@ function setup(){
 
 //Draw loop
 function draw() {
-  stateCheck();
+
+  if(changeState === true){
+    state = "planet mode"
+    changeState = false;
+  }
+
   if(state === "space mode"){
+    spaceship.visible = true;
+    asteroids.visible = true;
+    planet.visible = true;
     clear();
-  background(bgImg);
-  spaceshipControls();
-  checkCollision();
-  edges();
-  asteroidEdes();
-  spaceActive = true;
-  // globalClock();
+    background(bgImg);
+    spaceshipControls();
+    checkCollision();
+    edges();
+    asteroidEdes();
+    //globalClock();
   }
 
   else{
-    clear()
-    background("black")
-    spaceship.remove();
-    planet.remove();
-    createPlayer();
+    background("black");
+    if(player === true){
+      spaceship.visible = false;
+      asteroids.visible = false;
+      planet.visible = false;
+      player = new Sprite();
+      player.collider = "n"
+      player.speed = -3;
+  }
+  borderCheck()
 }
 }
 
-function createPlayer(){
-  if(state === "planet mode" && !player === true){
-  player = new Sprite(random(width),random(height));
-  if(player.pos.x <1000){
-    console.log("hi")
+function borderCheck(){
+  if(player.pos.x < 100){
+    for (let i = 0; i < 5; i++) {
+      spawnWidth1 = random(300);
+      spawnWidth2 = random(900,width)
+      spawnWidthArray.push(spawnWidth1)
+      spawnWidthArray.push(spawnWidth2)
+      spawnHeight1 = random(100);
+      spawnHeight2 = random(500,height)
+      spawnHeightArray.push(spawnHeight1)
+      spawnHeightArray.push(spawnHeight2)
+      createAsteroid(random(spawnWidthArray),random(spawnHeightArray),0.35)
+    }
+    player = true;
     state = "space mode"
   }
 }
-}
-
 
 //checks collisions between various objects
 function checkCollision(){
   spaceship.collides(asteroids, spaceshipHitAsteroids);
   spaceshipBullets.collides(asteroids, bulletsHitAsteroids);
   planet.collides(asteroids,planetHitAsteroids)
+
+  if(asteroids.length ===0){
+    changeState = true;
+  }
 }
 
 //Eexcutes various functions after a specific amount of time
@@ -138,21 +163,8 @@ function globalClock(){
     for (let i=0; i<10; i++) {
       createAsteroid(random(spawnWidthArray), random(spawnHeightArray), 0.35)
     } 
-    extraAsteroids = millis() + timer*30;
-  }
+    extraAsteroids = millis() + timer*10;
 }
-
-let spaceActive = true;
-function stateCheck(){
-  if(asteroids.length === 0 && spaceActive){
-    state = "planet mode";
-    spaceActive = false;
-  }
-
-  // if(state === "planet mode"){
-  //   console.log("run")
-
-  // }
 }
 
 
