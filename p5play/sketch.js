@@ -58,7 +58,9 @@ function preload() {
   spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
   planetImg = loadImage("Assets/Images/planet.webp");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
-  desertBg = loadImage("Assets/Images/image of a sandy dessert.png");
+  // desertBg = loadImage("Assets/Images/floor img.jpg");
+  desertBg = loadImage("Assets/Images/Planet floor img.jpg");
+
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
   asteroidImg2 = loadImage("Assets/Images/Asteroid2.png");
@@ -98,6 +100,7 @@ function setup(){
 //Draw loop
 function draw() {
 
+
   if(changeState === true){
     state = "planet mode"
     console.log("planet mode")
@@ -117,6 +120,7 @@ function draw() {
     asteroidEdes();
     camera.x = width/2
     camera.y = height/2
+    camera.zoom = 1
     //globalClock();
   }
 
@@ -129,10 +133,25 @@ function draw() {
       player.collider = "n"
     }
     playerControl();
+    background("black")
     borderCheck();
+    switchState();
     camera.on()
     imageMode(CENTER);
-    image(desertBg,width/2,height/2,);
+    camera.zoom = 0.7;
+    
+    image(desertBg,width/2,height/2);
+    for(let n = 0; n<15; n++){
+      image(desertBg,width/2+desertBg.width*n,height/2);
+      image(desertBg,width/2-desertBg.width*n,height/2);
+      for(let i = 1; i<15; i++){
+        image(desertBg,width/2+desertBg.width*n,height/2+desertBg.height*i);
+        image(desertBg,width/2-desertBg.width*n,height/2+desertBg.height*i);
+        image(desertBg,width/2+desertBg.width*n,height/2-desertBg.height*i);
+        image(desertBg,width/2-desertBg.width*n,height/2-desertBg.height*i);
+      }
+    }
+
     camera.x = player.x
     camera.y = player.y
     camera.off()
@@ -140,7 +159,7 @@ function draw() {
 }
 
 function playerControl(){
-  player.speed = 3;
+  player.speed = 100;
 	
 	if (kb.pressing('up')) {
 		player.direction = -90;
@@ -156,7 +175,25 @@ function playerControl(){
 }
 
 function borderCheck(){
-  if(player.pos.x < 100){
+  if(player.pos.x > desertBg.width*15 && player.direction === 0){
+    player.speed = 0
+  }
+
+  if(player.pos.x < -desertBg.width*13 && player.direction === 180){
+    player.speed = 0
+  }
+
+  if(player.pos.y > desertBg.height*14.5 && player.direction === 90){
+    player.speed = 0
+  }
+
+  if(player.pos.y < -desertBg.width*13.5 && player.direction === -90){
+    player.speed = 0
+  }
+}
+
+function switchState(){
+  if(player.pos.x > desertBg.width*15){
     for (let i = 0; i < 5; i++) {
       spawnWidth1 = random(300);
       spawnWidth2 = random(900,width)
