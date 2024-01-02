@@ -18,6 +18,10 @@ let state = "space mode"
 let changeState = false;
 let player = true;
 let particle;
+let terrain = [];
+let xOffset = 0;
+
+let desertBg;
 
 //Spaceship stuff
 let spaceship;
@@ -54,7 +58,7 @@ function preload() {
   spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
   planetImg = loadImage("Assets/Images/planet.webp");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
-
+  desertBg = loadImage("Assets/Images/image of a sandy dessert.png");
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
   asteroidImg2 = loadImage("Assets/Images/Asteroid2.png");
@@ -77,7 +81,7 @@ function setup(){
   // asteroid stuff
   asteroids = new Group();
   
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 1; i++) {
     spawnWidth1 = random(300);
     spawnWidth2 = random(900,width)
     spawnWidthArray.push(spawnWidth1)
@@ -96,7 +100,9 @@ function draw() {
 
   if(changeState === true){
     state = "planet mode"
+    console.log("planet mode")
     changeState = false;
+
   }
 
   if(state === "space mode"){
@@ -109,21 +115,44 @@ function draw() {
     checkCollision();
     edges();
     asteroidEdes();
+    camera.x = width/2
+    camera.y = height/2
     //globalClock();
   }
 
   else{
-    background("black");
     if(player === true){
       spaceship.visible = false;
       asteroids.visible = false;
       planet.visible = false;
       player = new Sprite();
       player.collider = "n"
-      player.speed = -3;
-  }
-  borderCheck()
+    }
+    playerControl();
+    borderCheck();
+    camera.on()
+    imageMode(CENTER);
+    image(desertBg,width/2,height/2,);
+    camera.x = player.x
+    camera.y = player.y
+    camera.off()
 }
+}
+
+function playerControl(){
+  player.speed = 3;
+	
+	if (kb.pressing('up')) {
+		player.direction = -90;
+	} else if (kb.pressing('down')) {
+		player.direction = 90;
+	} else if (kb.pressing('left')) {
+		player.direction = 180;
+	} else if (kb.pressing('right')) {
+		player.direction = 0;
+	} else {
+	  player.speed = 0;
+	}
 }
 
 function borderCheck(){
@@ -186,6 +215,8 @@ function createPlanet(x,y){
   planet.addImage(planetImg)
   planet.mass = 2
   planet.debug = true;
+  // camera.x = planet.x
+  // camera.y = planet.y
   pop();
 }
 

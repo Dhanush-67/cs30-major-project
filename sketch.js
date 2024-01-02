@@ -266,5 +266,3 @@ function edges(){
     spaceship.y = height + spaceship.h;
   }
 }
-
-
