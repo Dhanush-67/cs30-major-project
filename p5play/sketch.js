@@ -18,10 +18,9 @@ let state = "space mode"
 let changeState = false;
 let player = true;
 let particle;
-let terrain = [];
-let xOffset = 0;
 
 let desertBg;
+let monsters;
 
 //Spaceship stuff
 let spaceship;
@@ -58,7 +57,6 @@ function preload() {
   spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
   planetImg = loadImage("Assets/Images/planet.webp");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
-  // desertBg = loadImage("Assets/Images/floor img.jpg");
   desertBg = loadImage("Assets/Images/Planet floor img.jpg");
 
   //multiple asteroid images
@@ -74,6 +72,7 @@ function preload() {
   //Setup
 function setup(){
   new Canvas();
+  monsters = new Group();
 
   //spaceship setup stuff
   createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
@@ -129,15 +128,19 @@ function draw() {
       spaceship.visible = false;
       asteroids.visible = false;
       planet.visible = false;
+      spaceship.speed = 0;
       player = new Sprite();
+      spawnMonsters()
       player.collider = "n"
     }
+    moveMonster();
     playerControl();
     background("black")
     borderCheck();
     switchState();
     camera.on()
     imageMode(CENTER);
+    spawnClock();
     camera.zoom = 0.7;
     
     image(desertBg,width/2,height/2);
@@ -157,6 +160,40 @@ function draw() {
     camera.off()
 }
 }
+
+
+function spawnClock(){
+    //Adds more asteroids after 30s
+    if (millis() > extraAsteroids) {
+      for (let i=0; i<10; i++) {
+        spawnMonsters()
+        console.log("monster")
+      } 
+      extraAsteroids = millis() + timer*10;
+  }
+  }
+
+function spawnMonsters(){
+    let tempPos = p5.Vector.fromAngle(random(360), random(300,900))
+    let monsterPos = p5.Vector.add(player.position, tempPos);
+    let monster = new monsters.Sprite(monsterPos.x,monsterPos.y);
+    monster.collider = "n"
+}
+
+function moveMonster(){
+  for(let monster of monsters){
+    // monster.moveTowards(player, 0.005);
+    let distance = dist(player.x, player.y, monster.x, monster.y);
+
+  if (distance > 40) {
+    monster.direction = monster.angleTo(player);
+    monster.speed = random(2,7);
+  } else if (distance < 30) {
+    monster.speed = 0;
+  }
+  }
+}
+    
 
 function playerControl(){
   player.speed = 100;
