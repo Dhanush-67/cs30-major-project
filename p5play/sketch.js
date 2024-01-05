@@ -20,6 +20,10 @@ let player = true;
 let particle;
 
 let desertBg;
+let portal;
+let portalImg;
+let mineral;
+let mineralImg;
 let monsters;
 
 //Spaceship stuff
@@ -58,6 +62,8 @@ function preload() {
   planetImg = loadImage("Assets/Images/planet.webp");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
   desertBg = loadImage("Assets/Images/Planet floor img.jpg");
+  portalImg = loadImage("Assets/Images/portal gif.gif")
+  mineralImg = loadImage("Assets/Images/red icy shard.png")
 
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
@@ -130,6 +136,11 @@ function draw() {
       planet.visible = false;
       spaceship.speed = 0;
       player = new Sprite();
+      portal = new Sprite(random(-desertBg.width*3,desertBg.width*5),random(-desertBg.width*5.5,desertBg.height*4.5));
+      portal.addImage(portalImg)
+      mineral = new Sprite(random(-desertBg.width*3,desertBg.width*5),random(-desertBg.width*5.5,desertBg.height*4.5));
+      mineral.addImage(mineralImg)
+      mineral.scale = 0.1
       spawnMonsters()
       player.collider = "n"
     }
@@ -193,7 +204,6 @@ function moveMonster(){
   }
   }
 }
-    
 
 function playerControl(){
   player.speed = 100;
@@ -212,19 +222,16 @@ function playerControl(){
 }
 
 function borderCheck(){
-  if(player.pos.x > desertBg.width*15 && player.direction === 0){
+  if(player.pos.x > desertBg.width*5 && player.direction === 0){
     player.speed = 0
   }
-
-  if(player.pos.x < -desertBg.width*13 && player.direction === 180){
+  if(player.pos.x < -desertBg.width*3 && player.direction === 180){
     player.speed = 0
   }
-
-  if(player.pos.y > desertBg.height*14.5 && player.direction === 90){
+  if(player.pos.y > desertBg.height*4.5 && player.direction === 90){
     player.speed = 0
   }
-
-  if(player.pos.y < -desertBg.width*13.5 && player.direction === -90){
+  if(player.pos.y < -desertBg.width*5.5 && player.direction === -90){
     player.speed = 0
   }
 }
