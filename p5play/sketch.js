@@ -1,5 +1,5 @@
 // Project Title
-// Your Name
+// Dhanush Rai
 // Date
 //
 // Extra for Experts:
@@ -18,11 +18,15 @@ let state = "space mode"
 let changeState = false;
 let player = true;
 let particle;
+let coin;
+let coinImg;
 
+//planet mode
 let desertBg;
 let portal;
 let portalImg;
 let mineral;
+let mineralCount = 0;
 let mineralImg;
 let monsters;
 
@@ -64,6 +68,7 @@ function preload() {
   desertBg = loadImage("Assets/Images/Planet floor img.jpg");
   portalImg = loadImage("Assets/Images/portal gif.gif")
   mineralImg = loadImage("Assets/Images/red icy shard.png")
+  coinImg = loadImage("Assets/Images/coin spinning.gif")
 
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
@@ -75,7 +80,7 @@ function preload() {
 }
 
 
-  //Setup
+//Setup
 function setup(){
   new Canvas();
   monsters = new Group();
@@ -108,9 +113,7 @@ function draw() {
 
   if(changeState === true){
     state = "planet mode"
-    console.log("planet mode")
     changeState = false;
-
   }
 
   if(state === "space mode"){
@@ -135,26 +138,35 @@ function draw() {
       asteroids.visible = false;
       planet.visible = false;
       spaceship.speed = 0;
-      player = new Sprite();
-      portal = new Sprite(random(-desertBg.width*3,desertBg.width*5),random(-desertBg.width*5.5,desertBg.height*4.5));
-      portal.addImage(portalImg)
-      mineral = new Sprite(random(-desertBg.width*3,desertBg.width*5),random(-desertBg.width*5.5,desertBg.height*4.5));
-      mineral.addImage(mineralImg)
-      mineral.scale = 0.1
-      spawnMonsters()
-      player.collider = "n"
+      createPlayer();
+      createPortal();
+      createMineral();
+      spawnMonsters();
     }
+
+    checkCollisionPlanet();
     moveMonster();
     playerControl();
     background("black")
     borderCheck();
-    switchState();
     camera.on()
     imageMode(CENTER);
-    spawnClock();
+    // spawnClock();
     camera.zoom = 0.7;
-    
-    image(desertBg,width/2,height/2);
+    createBg();
+    camera.x = player.x
+    camera.y = player.y
+    camera.off()
+}
+}
+
+
+
+//Functions
+//Planet mode functions
+//creates background for planet mode
+function createBg(){
+  image(desertBg,width/2,height/2);
     for(let n = 0; n<15; n++){
       image(desertBg,width/2+desertBg.width*n,height/2);
       image(desertBg,width/2-desertBg.width*n,height/2);
@@ -165,25 +177,68 @@ function draw() {
         image(desertBg,width/2-desertBg.width*n,height/2-desertBg.height*i);
       }
     }
-
-    camera.x = player.x
-    camera.y = player.y
-    camera.off()
-}
 }
 
+//creates a single mineral everytime state switches to planet mode in a random spot
+function createMineral(){
+  mineral = new Sprite(random(-desertBg.width*1,desertBg.width*3),random(-desertBg.width*2.5,desertBg.height*1.5),
+  300,500);
+  mineral.addImage(mineralImg)
+  mineral.scale = 0.1
+  mineral.debug = true;
+}
 
+//creates a player when state switches to planet mode
+function createPlayer(){
+  player = new Sprite();
+  player.collider = "n"
+}
+
+//creates a single portal everytime state switches to planet mode in a random spot
+function createPortal(){
+  portal = new Sprite(random(-desertBg.width*1,desertBg.width*3),random(-desertBg.width*2.5,desertBg.height*1.5),
+  200,600);
+  portal.addImage(portalImg)
+  portal.collider = "n"
+  portal.debug = true;
+}
+
+//collision checker for planet mode
+function checkCollisionPlanet(){
+  player.overlaps(mineral, playerHitMineral);
+  player.overlaps(portal,playerHitPortal);
+}
+
+//If player a mineral and enters planet function call state switcher function
+function playerHitPortal(player,portal){
+  console.log("hit")
+  if(mineralCount === 1){
+    console.log("switch")
+    mineralCount = 0;
+    portal.remove();
+    monsters.remove();
+    player.remove();
+    switchState();
+  }
+}
+
+//mineral gets removed from screen and mineral counter goes up by one
+function playerHitMineral(player,mineral){
+  mineral.remove();
+  mineralCount ++;
+}
+
+// spawns monsters after every 10s
 function spawnClock(){
-    //Adds more asteroids after 30s
-    if (millis() > extraAsteroids) {
-      for (let i=0; i<10; i++) {
-        spawnMonsters()
-        console.log("monster")
-      } 
-      extraAsteroids = millis() + timer*10;
+  if (millis() > extraAsteroids) {
+    for (let i=0; i<10; i++) {
+      spawnMonsters()
+    } 
+    extraAsteroids = millis() + timer*10;
   }
   }
 
+//spawns monsters at a specific distance from the player
 function spawnMonsters(){
     let tempPos = p5.Vector.fromAngle(random(360), random(300,900))
     let monsterPos = p5.Vector.add(player.position, tempPos);
@@ -191,9 +246,9 @@ function spawnMonsters(){
     monster.collider = "n"
 }
 
+//monsters follow the player and if it comes to close it stops moving
 function moveMonster(){
   for(let monster of monsters){
-    // monster.moveTowards(player, 0.005);
     let distance = dist(player.x, player.y, monster.x, monster.y);
 
   if (distance > 40) {
@@ -205,6 +260,7 @@ function moveMonster(){
   }
 }
 
+//player contols
 function playerControl(){
   player.speed = 100;
 	
@@ -221,23 +277,25 @@ function playerControl(){
 	}
 }
 
+//player cannot cross these border
 function borderCheck(){
-  if(player.pos.x > desertBg.width*5 && player.direction === 0){
+  if(player.pos.x > desertBg.width*3 && player.direction === 0){
     player.speed = 0
   }
-  if(player.pos.x < -desertBg.width*3 && player.direction === 180){
+  if(player.pos.x < -desertBg.width*1 && player.direction === 180){
     player.speed = 0
   }
-  if(player.pos.y > desertBg.height*4.5 && player.direction === 90){
+  if(player.pos.y > desertBg.height*1.5 && player.direction === 90){
     player.speed = 0
   }
-  if(player.pos.y < -desertBg.width*5.5 && player.direction === -90){
+  if(player.pos.y < -desertBg.width*2.5 && player.direction === -90){
     player.speed = 0
   }
 }
 
+//switches state back to space mode while also adding some asteroids to prevent other state switch
+// from switching it back to planet mode
 function switchState(){
-  if(player.pos.x > desertBg.width*15){
     for (let i = 0; i < 5; i++) {
       spawnWidth1 = random(300);
       spawnWidth2 = random(900,width)
@@ -251,9 +309,11 @@ function switchState(){
     }
     player = true;
     state = "space mode"
-  }
 }
 
+
+
+// Space mode functions
 //checks collisions between various objects
 function checkCollision(){
   spaceship.collides(asteroids, spaceshipHitAsteroids);
@@ -277,7 +337,7 @@ function globalClock(){
 }
 }
 
-
+//creates the planet
 function createPlanet(x,y){
   push();
   planet = new Sprite(x, y,1800);
@@ -301,6 +361,7 @@ function createPlanet(x,y){
   pop();
 }
 
+//checks collisions between planet and asteroid
 function planetHitAsteroids(planet,asteroids){
 
   for(let i = 0; i < 10; i++){
@@ -329,6 +390,11 @@ function bulletsHitAsteroids(bullets,asteroids){
     particle.scale = 0.25;
   }
 
+  coin = new Sprite(asteroids.position.x, asteroids.position.y);
+  coin.removeColliders();
+  coin.addImage(coinImg);
+  coin.scale = 0.25;
+
   let minSize = asteroids.scale-0.2;
   if (minSize>=0.1) {
     createAsteroid(asteroids.position.x, asteroids.position.y, 0.2);
@@ -349,6 +415,11 @@ function spaceshipHitAsteroids(spaceship, asteroids) {
     particle.life = 15;
     particle.scale = 0.25;
   }
+  coin = new Sprite(asteroids.position.x, asteroids.position.y);
+  coin.removeColliders();
+  coin.addImage(coinImg);
+  coin.scale = 0.25;
+
   asteroids.remove();
 }
 
