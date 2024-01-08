@@ -14,12 +14,14 @@ let planetImg;
 let planetHP;
 let score;
 let introImg;
-let state = "space mode"
+let state = "space mode";
 let changeState = false;
 let player = true;
 let particle;
-let coin;
+let coins;
 let coinImg;
+let coinCount = 0;
+let spaceshipCoinCount = 0;
 
 //planet mode
 let desertBg;
@@ -60,15 +62,15 @@ let asteroids;
 function preload() {
   bgImg = loadImage("Assets/Images/space bg.png");
   spaceshipImg = loadImage("Assets/Images/Spaceship3.png");
-  bulletImg = loadImage("Assets/Images/bullet.gif")
+  bulletImg = loadImage("Assets/Images/bullet.gif");
   spaceshipMoveImg1 = loadImage("Assets/Images/Spaceship with fire 1.png");
   spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
   planetImg = loadImage("Assets/Images/planet.webp");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
   desertBg = loadImage("Assets/Images/Planet floor img.jpg");
-  portalImg = loadImage("Assets/Images/portal gif.gif")
-  mineralImg = loadImage("Assets/Images/red icy shard.png")
-  coinImg = loadImage("Assets/Images/coin spinning.gif")
+  portalImg = loadImage("Assets/Images/portal gif.gif");
+  mineralImg = loadImage("Assets/Images/red icy shard.png");
+  coinImg = loadImage("Assets/Images/coin spinning.gif");
 
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
@@ -84,6 +86,7 @@ function preload() {
 function setup(){
   new Canvas();
   monsters = new Group();
+  coins = new Group();
 
   //spaceship setup stuff
   createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
@@ -95,14 +98,14 @@ function setup(){
   
   for (let i = 0; i < 1; i++) {
     spawnWidth1 = random(300);
-    spawnWidth2 = random(900,width)
-    spawnWidthArray.push(spawnWidth1)
-    spawnWidthArray.push(spawnWidth2)
+    spawnWidth2 = random(900,width);
+    spawnWidthArray.push(spawnWidth1);
+    spawnWidthArray.push(spawnWidth2);
     spawnHeight1 = random(100);
-    spawnHeight2 = random(500,height)
-    spawnHeightArray.push(spawnHeight1)
-    spawnHeightArray.push(spawnHeight2)
-    createAsteroid(random(spawnWidthArray),random(spawnHeightArray),0.35)
+    spawnHeight2 = random(500,height);
+    spawnHeightArray.push(spawnHeight1);
+    spawnHeightArray.push(spawnHeight2);
+    createAsteroid(random(spawnWidthArray),random(spawnHeightArray),0.35);
   }
 
 }
@@ -112,7 +115,7 @@ function draw() {
 
 
   if(changeState === true){
-    state = "planet mode"
+    state = "planet mode";
     changeState = false;
   }
 
@@ -126,9 +129,9 @@ function draw() {
     checkCollision();
     edges();
     asteroidEdes();
-    camera.x = width/2
-    camera.y = height/2
-    camera.zoom = 1
+    camera.x = width/2;
+    camera.y = height/2;
+    camera.zoom = 1;
     //globalClock();
   }
 
@@ -137,6 +140,7 @@ function draw() {
       spaceship.visible = false;
       asteroids.visible = false;
       planet.visible = false;
+      coins.remove();
       spaceship.speed = 0;
       createPlayer();
       createPortal();
@@ -147,17 +151,17 @@ function draw() {
     checkCollisionPlanet();
     moveMonster();
     playerControl();
-    background("black")
+    background("black");
     borderCheck();
-    camera.on()
+    camera.on();
     imageMode(CENTER);
     // spawnClock();
     camera.zoom = 0.7;
     createBg();
-    camera.x = player.x
-    camera.y = player.y
-    camera.off()
-}
+    camera.x = player.x;
+    camera.y = player.y;
+    camera.off();
+  }
 }
 
 
@@ -167,39 +171,39 @@ function draw() {
 //creates background for planet mode
 function createBg(){
   image(desertBg,width/2,height/2);
-    for(let n = 0; n<15; n++){
-      image(desertBg,width/2+desertBg.width*n,height/2);
-      image(desertBg,width/2-desertBg.width*n,height/2);
-      for(let i = 1; i<15; i++){
-        image(desertBg,width/2+desertBg.width*n,height/2+desertBg.height*i);
-        image(desertBg,width/2-desertBg.width*n,height/2+desertBg.height*i);
-        image(desertBg,width/2+desertBg.width*n,height/2-desertBg.height*i);
-        image(desertBg,width/2-desertBg.width*n,height/2-desertBg.height*i);
-      }
+  for(let n = 0; n<15; n++){
+    image(desertBg,width/2+desertBg.width*n,height/2);
+    image(desertBg,width/2-desertBg.width*n,height/2);
+    for(let i = 1; i<15; i++){
+      image(desertBg,width/2+desertBg.width*n,height/2+desertBg.height*i);
+      image(desertBg,width/2-desertBg.width*n,height/2+desertBg.height*i);
+      image(desertBg,width/2+desertBg.width*n,height/2-desertBg.height*i);
+      image(desertBg,width/2-desertBg.width*n,height/2-desertBg.height*i);
     }
+  }
 }
 
 //creates a single mineral everytime state switches to planet mode in a random spot
 function createMineral(){
   mineral = new Sprite(random(-desertBg.width*1,desertBg.width*3),random(-desertBg.width*2.5,desertBg.height*1.5),
-  300,500);
-  mineral.addImage(mineralImg)
-  mineral.scale = 0.1
+    800,800);
+  mineral.addImage(mineralImg);
+  mineral.scale = 0.1;
   mineral.debug = true;
 }
 
 //creates a player when state switches to planet mode
 function createPlayer(){
   player = new Sprite();
-  player.collider = "n"
+  player.collider = "n";
 }
 
 //creates a single portal everytime state switches to planet mode in a random spot
 function createPortal(){
   portal = new Sprite(random(-desertBg.width*1,desertBg.width*3),random(-desertBg.width*2.5,desertBg.height*1.5),
-  200,600);
-  portal.addImage(portalImg)
-  portal.collider = "n"
+    200,600);
+  portal.addImage(portalImg);
+  portal.collider = "n";
   portal.debug = true;
 }
 
@@ -211,12 +215,13 @@ function checkCollisionPlanet(){
 
 //If player a mineral and enters planet function call state switcher function
 function playerHitPortal(player,portal){
-  console.log("hit")
+  console.log("hit");
   if(mineralCount === 1){
-    console.log("switch")
+    console.log("switch");
     mineralCount = 0;
     portal.remove();
     monsters.remove();
+    mineral.remove();
     player.remove();
     switchState();
   }
@@ -232,18 +237,18 @@ function playerHitMineral(player,mineral){
 function spawnClock(){
   if (millis() > extraAsteroids) {
     for (let i=0; i<10; i++) {
-      spawnMonsters()
+      spawnMonsters();
     } 
     extraAsteroids = millis() + timer*10;
   }
-  }
+}
 
 //spawns monsters at a specific distance from the player
 function spawnMonsters(){
-    let tempPos = p5.Vector.fromAngle(random(360), random(300,900))
-    let monsterPos = p5.Vector.add(player.position, tempPos);
-    let monster = new monsters.Sprite(monsterPos.x,monsterPos.y);
-    monster.collider = "n"
+  let tempPos = p5.Vector.fromAngle(random(360), random(300,900));
+  let monsterPos = p5.Vector.add(player.position, tempPos);
+  let monster = new monsters.Sprite(monsterPos.x,monsterPos.y);
+  monster.collider = "n";
 }
 
 //monsters follow the player and if it comes to close it stops moving
@@ -251,12 +256,12 @@ function moveMonster(){
   for(let monster of monsters){
     let distance = dist(player.x, player.y, monster.x, monster.y);
 
-  if (distance > 40) {
-    monster.direction = monster.angleTo(player);
-    monster.speed = random(2,7);
-  } else if (distance < 30) {
-    monster.speed = 0;
-  }
+    if (distance > 40) {
+      monster.direction = monster.angleTo(player);
+      monster.speed = random(2,7);
+    } else if (distance < 30) {
+      monster.speed = 0;
+    }
   }
 }
 
@@ -264,51 +269,51 @@ function moveMonster(){
 function playerControl(){
   player.speed = 100;
 	
-	if (kb.pressing('up')) {
-		player.direction = -90;
-	} else if (kb.pressing('down')) {
-		player.direction = 90;
-	} else if (kb.pressing('left')) {
-		player.direction = 180;
-	} else if (kb.pressing('right')) {
-		player.direction = 0;
-	} else {
+  if (kb.pressing("up")) {
+    player.direction = -90;
+  } else if (kb.pressing("down")) {
+    player.direction = 90;
+  } else if (kb.pressing("left")) {
+    player.direction = 180;
+  } else if (kb.pressing("right")) {
+    player.direction = 0;
+  } else {
 	  player.speed = 0;
-	}
+  }
 }
 
 //player cannot cross these border
 function borderCheck(){
   if(player.pos.x > desertBg.width*3 && player.direction === 0){
-    player.speed = 0
+    player.speed = 0;
   }
   if(player.pos.x < -desertBg.width*1 && player.direction === 180){
-    player.speed = 0
+    player.speed = 0;
   }
   if(player.pos.y > desertBg.height*1.5 && player.direction === 90){
-    player.speed = 0
+    player.speed = 0;
   }
   if(player.pos.y < -desertBg.width*2.5 && player.direction === -90){
-    player.speed = 0
+    player.speed = 0;
   }
 }
 
 //switches state back to space mode while also adding some asteroids to prevent other state switch
 // from switching it back to planet mode
 function switchState(){
-    for (let i = 0; i < 5; i++) {
-      spawnWidth1 = random(300);
-      spawnWidth2 = random(900,width)
-      spawnWidthArray.push(spawnWidth1)
-      spawnWidthArray.push(spawnWidth2)
-      spawnHeight1 = random(100);
-      spawnHeight2 = random(500,height)
-      spawnHeightArray.push(spawnHeight1)
-      spawnHeightArray.push(spawnHeight2)
-      createAsteroid(random(spawnWidthArray),random(spawnHeightArray),0.35)
-    }
-    player = true;
-    state = "space mode"
+  for (let i = 0; i < 5; i++) {
+    spawnWidth1 = random(300);
+    spawnWidth2 = random(900,width);
+    spawnWidthArray.push(spawnWidth1);
+    spawnWidthArray.push(spawnWidth2);
+    spawnHeight1 = random(100);
+    spawnHeight2 = random(500,height);
+    spawnHeightArray.push(spawnHeight1);
+    spawnHeightArray.push(spawnHeight2);
+    createAsteroid(random(spawnWidthArray),random(spawnHeightArray),0.35);
+  }
+  player = true;
+  state = "space mode";
 }
 
 
@@ -318,7 +323,11 @@ function switchState(){
 function checkCollision(){
   spaceship.collides(asteroids, spaceshipHitAsteroids);
   spaceshipBullets.collides(asteroids, bulletsHitAsteroids);
-  planet.collides(asteroids,planetHitAsteroids)
+  planet.collides(asteroids,planetHitAsteroids);
+  if(coinCount >= 1){
+    spaceship.overlaps(coins,spaceshipHitCoin);
+  }
+  
 
   if(asteroids.length ===0){
     changeState = true;
@@ -331,10 +340,10 @@ function globalClock(){
   //Adds more asteroids after 30s
   if (millis() > extraAsteroids) {
     for (let i=0; i<10; i++) {
-      createAsteroid(random(spawnWidthArray), random(spawnHeightArray), 0.35)
+      createAsteroid(random(spawnWidthArray), random(spawnHeightArray), 0.35);
     } 
     extraAsteroids = millis() + timer*10;
-}
+  }
 }
 
 //creates the planet
@@ -347,18 +356,24 @@ function createPlanet(x,y){
     planet.collider = "n";
   }
   else if(spaceshipBullets.overlaps(planet)){
-    planet.collider = "n"
+    planet.collider = "n";
   }
   else{
     planet.collider = "s";
   }
   imageMode(CENTER);
-  planet.addImage(planetImg)
-  planet.mass = 2
+  planet.addImage(planetImg);
+  planet.mass = 2;
   planet.debug = true;
   // camera.x = planet.x
   // camera.y = planet.y
   pop();
+}
+
+//checks collisions between spaceship and coins
+function spaceshipHitCoin(spaceship,coins){
+  coins.remove();
+  spaceshipCoinCount += 1;
 }
 
 //checks collisions between planet and asteroid
@@ -369,7 +384,7 @@ function planetHitAsteroids(planet,asteroids){
     particle.removeColliders();
     particle.addImage(particleImg);
     particle.direction = random(360);
-    particle.speed = random(2,7)
+    particle.speed = random(2,7);
     particle.life = 10;
     particle.scale = 0.25;
   }
@@ -385,15 +400,13 @@ function bulletsHitAsteroids(bullets,asteroids){
     particle.removeColliders();
     particle.addImage(particleImg);
     particle.direction = random(360);
-    particle.speed = random(2,7)
+    particle.speed = random(2,7);
     particle.life = 10;
     particle.scale = 0.25;
   }
 
-  coin = new Sprite(asteroids.position.x, asteroids.position.y);
-  coin.removeColliders();
-  coin.addImage(coinImg);
-  coin.scale = 0.25;
+  createCoin(asteroids.position.x, asteroids.position.y);
+
 
   let minSize = asteroids.scale-0.2;
   if (minSize>=0.1) {
@@ -404,6 +417,16 @@ function bulletsHitAsteroids(bullets,asteroids){
   asteroids.remove();
 }
 
+//displays coins when asteroids are destroyed
+function createCoin(x,y){
+  let coin = new coins.Sprite(x,y);
+  coin.removeColliders();
+  coin.addImage(coinImg);
+  coin.scale = 0.25;
+  coinCount += 1;
+  coin.debug = true;
+}
+
 //checks collisions between asteroids and spaceship
 function spaceshipHitAsteroids(spaceship, asteroids) {
   for(let i = 0; i < 10; i++){
@@ -411,15 +434,12 @@ function spaceshipHitAsteroids(spaceship, asteroids) {
     particle.removeColliders();
     particle.addImage(particleImg);
     particle.direction = random(360);
-    particle.speed = random(2,4)
+    particle.speed = random(2,4);
     particle.life = 15;
     particle.scale = 0.25;
   }
-  coin = new Sprite(asteroids.position.x, asteroids.position.y);
-  coin.removeColliders();
-  coin.addImage(coinImg);
-  coin.scale = 0.25;
 
+  createCoin(asteroids.position.x, asteroids.position.y);
   asteroids.remove();
 }
 
@@ -431,32 +451,32 @@ function createAsteroid(x, y, size) {
 
   //set new hitboxes for each different asteroid
   if(asteroidSprite === asteroidImg1){
-    asteroid.removeColliders()
+    asteroid.removeColliders();
     asteroid.addCollider(-5,-5, 200);
   }
   if(asteroidSprite === asteroidImg2){
-    asteroid.removeColliders()
+    asteroid.removeColliders();
     asteroid.addCollider(-8,3, 220);
   }
   if(asteroidSprite === asteroidImg3){
-    asteroid.removeColliders()
+    asteroid.removeColliders();
     asteroid.addCollider(5,-15,250);
   }
   if(asteroidSprite === asteroidImg4){
-    asteroid.removeColliders()
+    asteroid.removeColliders();
     asteroid.addCollider(5,-7,220);
   }
   if(asteroidSprite === asteroidImg5){
-    asteroid.removeColliders()
+    asteroid.removeColliders();
     asteroid.addCollider(-8,-4,220);
   }
 
   asteroid.scale = size;
   asteroid.addImage(asteroidSprite);
   asteroid.bounciness = 0.6;
-  spaceship.mass = 5
+  spaceship.mass = 5;
   asteroid.direction = random(360);
-  asteroid.speed = random(2,7)
+  asteroid.speed = random(2,7);
   asteroid.debug = true;
   pop();
 }
@@ -477,7 +497,7 @@ function asteroidEdes(){
     else if (asteroid.y < -asteroid.h){
       asteroid.y = height + asteroid.h;
     }
-    }
+  }
 }
 
 //Displays the spaceship
@@ -487,10 +507,10 @@ function createSpaceship(x,y,w,h){
   spaceship.layer = 2;
   spaceship.scale = 0.4;
   imageMode(CENTER);
-  spaceship.mass = 2
+  spaceship.mass = 2;
   spaceship.addAni("idle",spaceshipImg);
   spaceship.addAni("moving", spaceshipMoveImg1,spaceshipMoveImg1,spaceshipMoveImg2);
-  spaceship.rotationLock = true
+  spaceship.rotationLock = true;
   spaceship.debug = true;
   pop();
 }
@@ -518,7 +538,7 @@ function spaceshipControls(){
   if (kb.pressing("left")){
     spaceship.rotation -= 4;
   } 
-  if (kb.presses(' ')) {
+  if (kb.presses(" ")) {
     createBullets("spaceship");
   }
 }
