@@ -365,8 +365,6 @@ function createPlanet(x,y){
   planet.addImage(planetImg);
   planet.mass = 2;
   planet.debug = true;
-  // camera.x = planet.x
-  // camera.y = planet.y
   pop();
 }
 
