@@ -68,6 +68,7 @@ function preload() {
   planetImg = loadImage("Assets/Images/planet.webp");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
   desertBg = loadImage("Assets/Images/Planet floor img.jpg");
+  // desertBg = loadImage("Assets/Images/ice background.jpg");
   portalImg = loadImage("Assets/Images/portal gif.gif");
   mineralImg = loadImage("Assets/Images/red icy shard.png");
   coinImg = loadImage("Assets/Images/coin spinning.gif");
