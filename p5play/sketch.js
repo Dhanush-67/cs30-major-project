@@ -67,8 +67,8 @@ function preload() {
   spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
   planetImg = loadImage("Assets/Images/planet.webp");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
-  desertBg = loadImage("Assets/Images/Planet floor img.jpg");
-  // desertBg = loadImage("Assets/Images/ice background.jpg");
+  // desertBg = loadImage("Assets/Images/Planet floor img.jpg");
+  desertBg = loadImage("Assets/Images/ice background.jpg");
   portalImg = loadImage("Assets/Images/portal gif.gif");
   mineralImg = loadImage("Assets/Images/red icy shard.png");
   coinImg = loadImage("Assets/Images/coin spinning.gif");
@@ -195,6 +195,13 @@ function createMineral(){
 
 //creates a player when state switches to planet mode
 function createPlayer(){
+  player = new Sprite();
+  splatAni = loadAnimation('Assets/Images/player sprite sheet.png', { frameSize: [171, 158], frames: 11 });
+	animation(splatAni, 100, 100);
+
+	scale(0.6);
+	image(splatAni.spriteSheet, 320, 80, 500, 154);
+}
   player = new Sprite();
   player.collider = "n";
 }
