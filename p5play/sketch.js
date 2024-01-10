@@ -55,6 +55,7 @@ let asteroidImg4;
 let asteroidImg5;
 let particleImg;
 let asteroids;
+let button;
 
 
 
@@ -88,6 +89,8 @@ function setup(){
   new Canvas();
   monsters = new Group();
   coins = new Group();
+  button = createButton('shop');
+  button.position(0, 100);
 
   //spaceship setup stuff
   createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
@@ -124,6 +127,7 @@ function draw() {
     spaceship.visible = true;
     asteroids.visible = true;
     planet.visible = true;
+    button.show();
     clear();
     background(bgImg);
     spaceshipControls();
@@ -141,6 +145,7 @@ function draw() {
       spaceship.visible = false;
       asteroids.visible = false;
       planet.visible = false;
+      button.hide();
       coins.remove();
       spaceship.speed = 0;
       createPlayer();
@@ -196,14 +201,6 @@ function createMineral(){
 //creates a player when state switches to planet mode
 function createPlayer(){
   player = new Sprite();
-  splatAni = loadAnimation('Assets/Images/player sprite sheet.png', { frameSize: [171, 158], frames: 11 });
-	animation(splatAni, 100, 100);
-
-	scale(0.6);
-	image(splatAni.spriteSheet, 320, 80, 500, 154);
-}
-  player = new Sprite();
-  player.collider = "n";
 }
 
 //creates a single portal everytime state switches to planet mode in a random spot
