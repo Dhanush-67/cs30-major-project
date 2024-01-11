@@ -128,6 +128,7 @@ function draw() {
     asteroids.visible = true;
     planet.visible = true;
     button.show();
+    clickButton();
     clear();
     background(bgImg);
     spaceshipControls();
@@ -201,6 +202,7 @@ function createMineral(){
 //creates a player when state switches to planet mode
 function createPlayer(){
   player = new Sprite();
+  player.collider = "n";
 }
 
 //creates a single portal everytime state switches to planet mode in a random spot
@@ -337,6 +339,12 @@ function checkCollision(){
   if(asteroids.length ===0){
     changeState = true;
   }
+}
+
+function clickButton(){
+  button.mousePressed(() => {
+    allSprites.speed = 0;
+  });
 }
 
 //Eexcutes various functions after a specific amount of time
