@@ -31,6 +31,14 @@ let mineral;
 let mineralCount = 0;
 let mineralImg;
 let monsters;
+let monsterImg;
+let playerImg;
+let playerDownImg;
+let playerUpImg;
+let playerLeftImg;
+let playerRightImg;
+let fireballs;
+let fireballImg;
 
 //Spaceship stuff
 let spaceship;
@@ -68,11 +76,13 @@ function preload() {
   spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
   planetImg = loadImage("Assets/Images/planet.webp");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
-  // desertBg = loadImage("Assets/Images/Planet floor img.jpg");
-  desertBg = loadImage("Assets/Images/ice background.jpg");
+  desertBg = loadImage("Assets/Images/Planet floor img.jpg");
+  // desertBg = loadImage("Assets/Images/ice background.jpg");
   portalImg = loadImage("Assets/Images/portal gif.gif");
   mineralImg = loadImage("Assets/Images/red icy shard.png");
   coinImg = loadImage("Assets/Images/coin spinning.gif");
+  monsterImg = loadImage("Assets/Images/fire monster.gif");
+  fireballImg = loadImage("Assets/Images/fireballani-ezgif.com-effects.gif");
 
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
@@ -81,6 +91,13 @@ function preload() {
   asteroidImg4 = loadImage("Assets/Images/Asteroid4.png");
   asteroidImg5 = loadImage("Assets/Images/Asteroid5.png");
   particleImg = loadImage("Assets/Images/particle.png");
+
+  //multiple player images
+  playerImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (4).gif");
+  playerDownImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (2).gif");
+  playerUpImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker.gif");
+  playerLeftImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (3).gif");
+  playerRightImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (1).gif");
 }
 
 
@@ -91,6 +108,7 @@ function setup(){
   coins = new Group();
   button = createButton('shop');
   button.position(0, 100);
+  fireballs = new Group();
 
   //spaceship setup stuff
   createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
@@ -162,7 +180,7 @@ function draw() {
     borderCheck();
     camera.on();
     imageMode(CENTER);
-    // spawnClock();
+    spawnClock();
     camera.zoom = 0.7;
     createBg();
     camera.x = player.x;
@@ -195,14 +213,26 @@ function createMineral(){
   mineral = new Sprite(random(-desertBg.width*1,desertBg.width*3),random(-desertBg.width*2.5,desertBg.height*1.5),
     800,800);
   mineral.addImage(mineralImg);
+  mineral.overlaps(planet)
+  mineral.overlaps(spaceship)
   mineral.scale = 0.1;
   mineral.debug = true;
 }
 
 //creates a player when state switches to planet mode
 function createPlayer(){
-  player = new Sprite();
-  player.collider = "n";
+  player = new Sprite(width/2,height/2,30,40);
+  player.addAni("idle",playerImg);
+  player.addAni("movingDown", playerDownImg);
+  player.addAni("movingUp", playerUpImg);
+  player.addAni("movingLeft", playerLeftImg);
+  player.addAni("movingRight", playerRightImg);
+  // player.collider = "n";
+  player.overlaps(spaceship)
+  player.overlaps(planet)
+  player.rotationLock = true;
+  player.scale = 3
+  player.debug = true;
 }
 
 //creates a single portal everytime state switches to planet mode in a random spot
@@ -218,6 +248,12 @@ function createPortal(){
 function checkCollisionPlanet(){
   player.overlaps(mineral, playerHitMineral);
   player.overlaps(portal,playerHitPortal);
+  player.collides(fireballs,playerHitFireball);
+}
+
+//fireball disappears after hitting player
+function playerHitFireball(player,fireball){
+  fireball.remove();
 }
 
 //If player a mineral and enters planet function call state switcher function
@@ -230,6 +266,7 @@ function playerHitPortal(player,portal){
     monsters.remove();
     mineral.remove();
     player.remove();
+    fireballs.remove();
     switchState();
   }
 }
@@ -240,32 +277,67 @@ function playerHitMineral(player,mineral){
   mineralCount ++;
 }
 
-// spawns monsters after every 10s
+// shoots fireballs after 10s
 function spawnClock(){
+  fireballs.speed = 10
   if (millis() > extraAsteroids) {
     for (let i=0; i<10; i++) {
-      spawnMonsters();
-    } 
+      for(let monster of monsters){
+        shootFireball(monster.angleTo(player),monster.pos.x,monster.pos.y)
+      } 
+    }
     extraAsteroids = millis() + timer*10;
   }
+  
+}
+
+//creates fireballs which go from the monster to the player
+function shootFireball(angle,x,y){
+  let fireball = new fireballs.Sprite(x,y)
+  fireball.addImage(fireballImg)
+  fireball.removeColliders()
+  fireball.addCollider(0,30,100)
+  fireball.direction = angle
+  for(let monster of monsters){
+    fireball.overlaps(monster)
+  }
+  fireball.overlaps(planet)
+  fireball.overlaps(spaceship)
+  fireball.overlaps(mineral)
+  fireball.debug = true;
+  fireball.life = 500
 }
 
 //spawns monsters at a specific distance from the player
 function spawnMonsters(){
   let tempPos = p5.Vector.fromAngle(random(360), random(300,900));
   let monsterPos = p5.Vector.add(player.position, tempPos);
-  let monster = new monsters.Sprite(monsterPos.x,monsterPos.y);
-  monster.collider = "n";
+  let monster = new monsters.Sprite(monsterPos.x,monsterPos.y,);
+  monster.rotationLock = true;
+  monster.scale = 0.5
+  monster.debug = true;
 }
 
 //monsters follow the player and if it comes to close it stops moving
 function moveMonster(){
   for(let monster of monsters){
     let distance = dist(player.x, player.y, monster.x, monster.y);
+    monster.addImage(monsterImg)
+    monster.removeColliders();
+    monster.addCollider(100,100,500,700);
+    monster.overlaps(planet)
+    monster.overlaps(spaceship)
+    monster.overlaps(mineral)
+    if(monster.angleTo(player) > -90 && monster.angleTo(player) < 90){
+      monster.mirror.x = false;
+    }
+    else{
+      monster.mirror.x = true;
+    }
 
     if (distance > 40) {
       monster.direction = monster.angleTo(player);
-      monster.speed = random(2,7);
+      monster.speed = random(5);
     } else if (distance < 30) {
       monster.speed = 0;
     }
@@ -278,14 +350,19 @@ function playerControl(){
 	
   if (kb.pressing("up")) {
     player.direction = -90;
+    player.changeAni("movingUp");
   } else if (kb.pressing("down")) {
     player.direction = 90;
+    player.changeAni("movingDown");
   } else if (kb.pressing("left")) {
     player.direction = 180;
+    player.changeAni("movingLeft");
   } else if (kb.pressing("right")) {
     player.direction = 0;
+    player.changeAni("movingRight");
   } else {
 	  player.speed = 0;
+    player.changeAni("idle");
   }
 }
 
