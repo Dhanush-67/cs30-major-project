@@ -23,6 +23,13 @@ let coinImg;
 let coinCount = 0;
 let spaceshipCoinCount = 0;
 
+//sfx
+let thrust;
+let shootSound;
+let coinCollect;
+let destroyAsteroid;
+let gameOverSound;
+
 //planet mode
 let desertBg;
 let portal;
@@ -69,6 +76,7 @@ let button;
 
 //preload
 function preload() {
+  //images
   bgImg = loadImage("Assets/Images/space bg.png");
   spaceshipImg = loadImage("Assets/Images/Spaceship3.png");
   bulletImg = loadImage("Assets/Images/bullet.gif");
@@ -98,6 +106,13 @@ function preload() {
   playerUpImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker.gif");
   playerLeftImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (3).gif");
   playerRightImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (1).gif");
+
+  //audio
+  thrust = loadSound("Assets/Audio/space thrust.mp3");
+  shootSound = loadSound("Assets/Audio/bullet sound.mp3");
+  coinCollect = loadSound("Assets/Audio/coin collect.mp3");
+  destroyAsteroid = loadSound("Assets/Audio/asteroid destoyed.mp3");
+  gameOverSound = loadSound("Assets/Audio/game over.mp3");
 }
 
 
@@ -164,6 +179,7 @@ function draw() {
       spaceship.visible = false;
       asteroids.visible = false;
       planet.visible = false;
+      thrust.stop();
       button.hide();
       coins.remove();
       spaceship.speed = 0;
@@ -616,9 +632,11 @@ function spaceshipControls(){
       spaceship.vel.y += sin(spaceship.rotation) * 0.15;
     }
     spaceship.changeAni("moving");
+    thrust.play();
   } 
   else{
     spaceship.changeAni("idle");
+    thrust.stop();
   }
   if (kb.pressing("right")){
     spaceship.rotation += 4;
