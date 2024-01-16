@@ -22,6 +22,8 @@ let coins;
 let coinImg;
 let coinCount = 0;
 let spaceshipCoinCount = 0;
+let shopImg;
+let shopButton;
 
 //sfx
 let thrust;
@@ -91,6 +93,7 @@ function preload() {
   coinImg = loadImage("Assets/Images/coin spinning.gif");
   monsterImg = loadImage("Assets/Images/fire monster.gif");
   fireballImg = loadImage("Assets/Images/fireballani-ezgif.com-effects.gif");
+  shopImg = loadImage("Assets/Images/shop icon.png");
 
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
@@ -124,9 +127,20 @@ function setup(){
   new Canvas();
   monsters = new Group();
   coins = new Group();
-  button = createButton('shop');
-  button.position(0, 100);
   fireballs = new Group();
+
+  //button stuff
+  // button = createButton('shop');
+  // button.position(0, 100);
+
+  shopButton = new Clickable();    
+  shopButton.locate(0,100);
+  shopImg.scale = 5;
+  shopButton.image = shopImg;     
+  shopButton.fitImage = false;
+  shopButton.resize(75, 80);
+  shopButton.text = "";       //Text of the clickable (string)
+
 
   //spaceship setup stuff
   createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
@@ -153,7 +167,6 @@ function setup(){
 //Draw loop
 function draw() {
 
-
   if(changeState === true){
     state = "planet mode";
     changeState = false;
@@ -163,10 +176,11 @@ function draw() {
     spaceship.visible = true;
     asteroids.visible = true;
     planet.visible = true;
-    button.show();
-    clickButton();
+    // button.show();
+    // clickButton();
     clear();
     background(bgImg);
+    shopButton.draw();  
     spaceshipControls();
     checkCollision();
     edges();
@@ -183,7 +197,7 @@ function draw() {
       asteroids.visible = false;
       planet.visible = false;
       thrust.stop();
-      button.hide();
+      // button.hide();
       coins.remove();
       spaceship.speed = 0;
       createPlayer();
