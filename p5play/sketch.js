@@ -102,17 +102,20 @@ function preload() {
 
   //multiple player images
   playerImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (4).gif");
-  playerDownImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (2).gif");
-  playerUpImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker.gif");
+  playerDownImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (7).gif");
+  playerUpImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (5).gif");
   playerLeftImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (3).gif");
   playerRightImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (1).gif");
 
   //audio
   thrust = loadSound("Assets/Audio/space thrust.mp3");
-  shootSound = loadSound("Assets/Audio/bullet sound.mp3");
+  // shootSound = loadSound("Assets/Audio/bullet sound.mp3");
+  shootSound = loadSound("Assets/Audio/arrays-objects-assn_shoot Sound.wav");
   coinCollect = loadSound("Assets/Audio/coin collect.mp3");
   destroyAsteroid = loadSound("Assets/Audio/asteroid destoyed.mp3");
   gameOverSound = loadSound("Assets/Audio/game over.mp3");
+
+  thrust.setVolume(0.5);
 }
 
 
@@ -297,11 +300,15 @@ function playerHitMineral(player,mineral){
 function spawnClock(){
   fireballs.speed = 10
   if (millis() > extraAsteroids) {
-    for (let i=0; i<10; i++) {
+    // for (let i=0; i<10; i++) {
       for(let monster of monsters){
         shootFireball(monster.angleTo(player),monster.pos.x,monster.pos.y)
+        shootFireball(monster.angleTo(player)+PI/2,monster.pos.x,monster.pos.y)
+        shootFireball(monster.angleTo(player)-PI/2,monster.pos.x,monster.pos.y)
+        shootFireball(monster.angleTo(player)+PI,monster.pos.x,monster.pos.y)
+        shootFireball(monster.angleTo(player)-PI,monster.pos.x,monster.pos.y)
       } 
-    }
+    // }
     extraAsteroids = millis() + timer*10;
   }
   
@@ -477,6 +484,7 @@ function createPlanet(x,y){
 //checks collisions between spaceship and coins
 function spaceshipHitCoin(spaceship,coins){
   coins.remove();
+  coinCollect.play();
   spaceshipCoinCount += 1;
 }
 
@@ -508,7 +516,7 @@ function bulletsHitAsteroids(bullets,asteroids){
     particle.life = 10;
     particle.scale = 0.25;
   }
-
+  destroyAsteroid.play();
   createCoin(asteroids.position.x, asteroids.position.y);
 
 
@@ -542,7 +550,7 @@ function spaceshipHitAsteroids(spaceship, asteroids) {
     particle.life = 15;
     particle.scale = 0.25;
   }
-
+  destroyAsteroid.play();
   createCoin(asteroids.position.x, asteroids.position.y);
   asteroids.remove();
 }
@@ -632,7 +640,9 @@ function spaceshipControls(){
       spaceship.vel.y += sin(spaceship.rotation) * 0.15;
     }
     spaceship.changeAni("moving");
-    thrust.play();
+    if (!thrust.isPlaying()){
+      thrust.play();
+    }
   } 
   else{
     spaceship.changeAni("idle");
@@ -645,6 +655,7 @@ function spaceshipControls(){
     spaceship.rotation -= 4;
   } 
   if (kb.presses(" ")) {
+    shootSound.play();
     createBullets("spaceship");
   }
 }
