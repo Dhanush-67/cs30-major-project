@@ -11,7 +11,7 @@ let timer = 1000;
 let extraAsteroids = timer*5;
 let planet;
 let planetImg;
-let planetHP;
+let planetHP = 20;
 let score;
 let introImg;
 let state = "space mode";
@@ -46,6 +46,7 @@ let playerDownImg;
 let playerUpImg;
 let playerLeftImg;
 let playerRightImg;
+let playerHP = 10;
 let fireballs;
 let fireballImg;
 
@@ -71,6 +72,7 @@ let asteroidImg3;
 let asteroidImg4;
 let asteroidImg5;
 let particleImg;
+let asteroidCount = 0;
 let asteroids;
 let button;
 
@@ -173,7 +175,8 @@ function setup(){
 
 //Draw loop
 function draw() {
-
+  // console.log(planetHP);
+  console.log(playerHP);
   if(changeState === true){
     state = "planet mode";
     changeState = false;
@@ -203,7 +206,7 @@ function draw() {
       spaceship.visible = false;
       asteroids.visible = false;
       planet.visible = false;
-      spaceshipBullets.remove()
+      spaceshipBullets.remove();
       particle.remove();
       thrust.stop();
       // button.hide();
@@ -256,8 +259,8 @@ function createMineral(){
   mineral = new Sprite(random(-desertBg.width*1,desertBg.width*3),random(-desertBg.width*2.5,desertBg.height*1.5),
     800,800);
   mineral.addImage(mineralImg);
-  mineral.overlaps(planet)
-  mineral.overlaps(spaceship)
+  mineral.overlaps(planet);
+  mineral.overlaps(spaceship);
   mineral.scale = 0.1;
   mineral.debug = true;
 }
@@ -271,10 +274,10 @@ function createPlayer(){
   player.addAni("movingLeft", playerLeftImg);
   player.addAni("movingRight", playerRightImg);
   // player.collider = "n";
-  player.overlaps(spaceship)
-  player.overlaps(planet)
+  player.overlaps(spaceship);
+  player.overlaps(planet);
   player.rotationLock = true;
-  player.scale = 1.5
+  player.scale = 1.5;
   player.debug = true;
 }
 
@@ -283,7 +286,7 @@ function createPortal(){
   portal = new Sprite(random(-desertBg.width*1,desertBg.width*3),random(-desertBg.width*2.5,desertBg.height*1.5),
     200,600);
   portal.addImage(portalImg);
-  portal.scale = 0.8
+  portal.scale = 0.8;
   portal.collider = "n";
   portal.debug = true;
 }
@@ -293,10 +296,19 @@ function checkCollisionPlanet(){
   player.overlaps(mineral, playerHitMineral);
   player.overlaps(portal,playerHitPortal);
   player.collides(fireballs,playerHitFireball);
+  player.collides(monsters,playerHitMonster);
+}
+
+
+//checks collison between monster and player and reduces player health
+function playerHitMonster(player,monster){
+  playerHP -= 1;
+  player.overlaps(monster);
 }
 
 //fireball disappears after hitting player
 function playerHitFireball(player,fireball){
+  // playerHP -= 1;
   fireball.remove();
 }
 
@@ -323,16 +335,16 @@ function playerHitMineral(player,mineral){
 
 // shoots fireballs after 5s
 function spawnClock(){
-  fireballs.speed = 10
+  fireballs.speed = 10;
   if (millis() > extraAsteroids) {
     // for (let i=0; i<10; i++) {
-      for(let monster of monsters){
-        shootFireball(monster.angleTo(player),monster.pos.x,monster.pos.y)
-        shootFireball(monster.angleTo(player)+PI/2,monster.pos.x,monster.pos.y)
-        shootFireball(monster.angleTo(player)-PI/2,monster.pos.x,monster.pos.y)
-        shootFireball(monster.angleTo(player)+PI,monster.pos.x,monster.pos.y)
-        shootFireball(monster.angleTo(player)-PI,monster.pos.x,monster.pos.y)
-      } 
+    for(let monster of monsters){
+      shootFireball(monster.angleTo(player),monster.pos.x,monster.pos.y);
+      shootFireball(monster.angleTo(player)+PI/2,monster.pos.x,monster.pos.y);
+      shootFireball(monster.angleTo(player)-PI/2,monster.pos.x,monster.pos.y);
+      shootFireball(monster.angleTo(player)+PI,monster.pos.x,monster.pos.y);
+      shootFireball(monster.angleTo(player)-PI,monster.pos.x,monster.pos.y);
+    } 
     // }
     extraAsteroids = millis() + timer*5;
   }
@@ -341,19 +353,19 @@ function spawnClock(){
 
 //creates fireballs which go from the monster to the player
 function shootFireball(angle,x,y){
-  let fireball = new fireballs.Sprite(x,y)
-  fireball.addImage(fireballImg)
-  fireball.removeColliders()
-  fireball.addCollider(0,30,100)
-  fireball.direction = angle
+  let fireball = new fireballs.Sprite(x,y);
+  fireball.addImage(fireballImg);
+  fireball.removeColliders();
+  fireball.addCollider(0,30,100);
+  fireball.direction = angle;
   for(let monster of monsters){
-    fireball.overlaps(monster)
+    fireball.overlaps(monster);
   }
-  fireball.overlaps(planet)
-  fireball.overlaps(spaceship)
-  fireball.overlaps(mineral)
+  fireball.overlaps(planet);
+  fireball.overlaps(spaceship);
+  fireball.overlaps(mineral);
   fireball.debug = true;
-  fireball.life = 500
+  fireball.life = 500;
 }
 
 //spawns monsters at a specific distance from the player
@@ -362,7 +374,7 @@ function spawnMonsters(){
   let monsterPos = p5.Vector.add(player.position, tempPos);
   let monster = new monsters.Sprite(monsterPos.x,monsterPos.y,);
   monster.rotationLock = true;
-  monster.scale = 0.5
+  monster.scale = 0.5;
   monster.debug = true;
 }
 
@@ -370,17 +382,19 @@ function spawnMonsters(){
 function moveMonster(){
   for(let monster of monsters){
     let distance = dist(player.x, player.y, monster.x, monster.y);
-    monster.addImage(monsterImg)
+    monster.addImage(monsterImg);
     monster.removeColliders();
-    monster.addCollider(100,100,500,700);
-    monster.overlaps(planet)
-    monster.overlaps(spaceship)
-    monster.overlaps(mineral)
+    monster.addCollider(100,100,450,700);
+    monster.overlaps(planet);
+    monster.overlaps(spaceship);
+    monster.overlaps(mineral);
     if(monster.angleTo(player) > -90 && monster.angleTo(player) < 90){
       monster.mirror.x = false;
     }
     else{
       monster.mirror.x = true;
+      monster.removeColliders();
+      monster.addCollider(-100,100,450,700);
     }
 
     if (distance > 40) {
@@ -433,7 +447,8 @@ function borderCheck(){
 //switches state back to space mode while also adding some asteroids to prevent other state switch
 // from switching it back to planet mode
 function switchState(){
-  for (let i = 0; i < 5; i++) {
+  asteroidCount += 1;
+  for (let i = 0; i < 5+asteroidCount; i++) {
     spawnWidth1 = random(300);
     spawnWidth2 = random(900,width);
     spawnWidthArray.push(spawnWidth1);
@@ -527,6 +542,13 @@ function planetHitAsteroids(planet,asteroids){
     particle.scale = 0.25;
   }
 
+  if(asteroids.scale.x === 0.35){
+    planetHP -= 2;
+  }
+  else{
+    planetHP -= 1;
+  }
+  
   asteroids.remove();
 }
 
