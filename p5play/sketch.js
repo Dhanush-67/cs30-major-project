@@ -8,7 +8,7 @@
 //Global variables
 let bgImg;
 let timer = 1000;
-let extraAsteroids = timer*10;
+let extraAsteroids = timer*5;
 let planet;
 let planetImg;
 let planetHP;
@@ -84,12 +84,14 @@ function preload() {
   bulletImg = loadImage("Assets/Images/bullet.gif");
   spaceshipMoveImg1 = loadImage("Assets/Images/Spaceship with fire 1.png");
   spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
-  planetImg = loadImage("Assets/Images/planet.webp");
+  // planetImg = loadImage("Assets/Images/planet.webp");
+  planetImg = loadImage("Assets/Images/lava planet animated from space (2).png");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
-  desertBg = loadImage("Assets/Images/Planet floor img.jpg");
-  // desertBg = loadImage("Assets/Images/ice background.jpg");
+  // desertBg = loadImage("Assets/Images/Planet floor img.jpg");
+  desertBg = loadImage("Assets/Images/molten lava bg.webp");
   portalImg = loadImage("Assets/Images/portal gif.gif");
   mineralImg = loadImage("Assets/Images/red icy shard.png");
+  // mineralImg = loadImage("Assets/Images/lava crystal 1.png");
   coinImg = loadImage("Assets/Images/coin spinning.gif");
   monsterImg = loadImage("Assets/Images/fire monster.gif");
   fireballImg = loadImage("Assets/Images/fireballani-ezgif.com-effects.gif");
@@ -104,11 +106,16 @@ function preload() {
   particleImg = loadImage("Assets/Images/particle.png");
 
   //multiple player images
-  playerImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (4).gif");
-  playerDownImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (7).gif");
-  playerUpImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (5).gif");
-  playerLeftImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (3).gif");
-  playerRightImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (1).gif");
+  // playerImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (4).gif");
+  // playerDownImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (7).gif");
+  // playerUpImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (5).gif");
+  // playerLeftImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (3).gif");
+  // playerRightImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (1).gif");
+  playerImg = loadImage("Assets/Images/ezgif.com-resize (4).gif");
+  playerDownImg = loadImage("Assets/Images/ezgif.com-resize.gif");
+  playerUpImg = loadImage("Assets/Images/ezgif.com-resize (3).gif");
+  playerLeftImg = loadImage("Assets/Images/ezgif.com-resize (1).gif");
+  playerRightImg = loadImage("Assets/Images/ezgif.com-resize (2).gif");
 
   //audio
   thrust = loadSound("Assets/Audio/space thrust.mp3");
@@ -139,7 +146,7 @@ function setup(){
   shopButton.image = shopImg;     
   shopButton.fitImage = false;
   shopButton.resize(75, 80);
-  shopButton.text = "";       //Text of the clickable (string)
+  shopButton.text = ""; 
 
 
   //spaceship setup stuff
@@ -196,6 +203,8 @@ function draw() {
       spaceship.visible = false;
       asteroids.visible = false;
       planet.visible = false;
+      spaceshipBullets.remove()
+      particle.remove();
       thrust.stop();
       // button.hide();
       coins.remove();
@@ -228,6 +237,7 @@ function draw() {
 //Planet mode functions
 //creates background for planet mode
 function createBg(){
+  desertBg.scale = 4;
   image(desertBg,width/2,height/2);
   for(let n = 0; n<15; n++){
     image(desertBg,width/2+desertBg.width*n,height/2);
@@ -264,7 +274,7 @@ function createPlayer(){
   player.overlaps(spaceship)
   player.overlaps(planet)
   player.rotationLock = true;
-  player.scale = 3
+  player.scale = 1.5
   player.debug = true;
 }
 
@@ -273,6 +283,7 @@ function createPortal(){
   portal = new Sprite(random(-desertBg.width*1,desertBg.width*3),random(-desertBg.width*2.5,desertBg.height*1.5),
     200,600);
   portal.addImage(portalImg);
+  portal.scale = 0.8
   portal.collider = "n";
   portal.debug = true;
 }
@@ -310,7 +321,7 @@ function playerHitMineral(player,mineral){
   mineralCount ++;
 }
 
-// shoots fireballs after 10s
+// shoots fireballs after 5s
 function spawnClock(){
   fireballs.speed = 10
   if (millis() > extraAsteroids) {
@@ -323,7 +334,7 @@ function spawnClock(){
         shootFireball(monster.angleTo(player)-PI,monster.pos.x,monster.pos.y)
       } 
     // }
-    extraAsteroids = millis() + timer*10;
+    extraAsteroids = millis() + timer*5;
   }
   
 }
@@ -347,7 +358,7 @@ function shootFireball(angle,x,y){
 
 //spawns monsters at a specific distance from the player
 function spawnMonsters(){
-  let tempPos = p5.Vector.fromAngle(random(360), random(300,900));
+  let tempPos = p5.Vector.fromAngle(random(360), random(700,1000));
   let monsterPos = p5.Vector.add(player.position, tempPos);
   let monster = new monsters.Sprite(monsterPos.x,monsterPos.y,);
   monster.rotationLock = true;
@@ -383,7 +394,7 @@ function moveMonster(){
 
 //player contols
 function playerControl(){
-  player.speed = 100;
+  player.speed = 10;
 	
   if (kb.pressing("up")) {
     player.direction = -90;
@@ -476,9 +487,10 @@ function globalClock(){
 //creates the planet
 function createPlanet(x,y){
   push();
-  planet = new Sprite(x, y,1800);
+  planet = new Sprite(x, y,590);
   planet.layer = 1;
-  planet.scale = 0.1;
+  // planet.scale = 0.1;
+  planet.scale = 0.3;
   if(spaceship.overlaps(planet)){
     planet.collider = "n";
   }
@@ -505,13 +517,13 @@ function spaceshipHitCoin(spaceship,coins){
 //checks collisions between planet and asteroid
 function planetHitAsteroids(planet,asteroids){
 
-  for(let i = 0; i < 10; i++){
+  for(let i = 0; i < 30; i++){
     particle = createSprite(asteroids.position.x, asteroids.position.y);
     particle.removeColliders();
     particle.addImage(particleImg);
     particle.direction = random(360);
     particle.speed = random(2,7);
-    particle.life = 10;
+    particle.life = 20;
     particle.scale = 0.25;
   }
 
@@ -521,13 +533,13 @@ function planetHitAsteroids(planet,asteroids){
 //checks collisions between asteroids and bullets
 function bulletsHitAsteroids(bullets,asteroids){
 
-  for(let i = 0; i < 10; i++){
+  for(let i = 0; i < 30; i++){
     particle = createSprite(asteroids.position.x, asteroids.position.y);
     particle.removeColliders();
     particle.addImage(particleImg);
     particle.direction = random(360);
     particle.speed = random(2,7);
-    particle.life = 10;
+    particle.life = 20;
     particle.scale = 0.25;
   }
   destroyAsteroid.play();
@@ -555,13 +567,13 @@ function createCoin(x,y){
 
 //checks collisions between asteroids and spaceship
 function spaceshipHitAsteroids(spaceship, asteroids) {
-  for(let i = 0; i < 10; i++){
+  for(let i = 0; i < 30; i++){
     particle = createSprite(asteroids.position.x, asteroids.position.y);
     particle.removeColliders();
     particle.addImage(particleImg);
     particle.direction = random(360);
     particle.speed = random(2,4);
-    particle.life = 15;
+    particle.life = 20;
     particle.scale = 0.25;
   }
   destroyAsteroid.play();
