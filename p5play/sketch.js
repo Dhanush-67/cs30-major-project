@@ -11,7 +11,7 @@ let timer = 1000;
 let extraAsteroids = timer*5;
 let planet;
 let planetImg;
-let planetHP = 20;
+let planetHP = 2;
 let score;
 let introImg;
 let state = "space mode";
@@ -175,8 +175,17 @@ function setup(){
 
 //Draw loop
 function draw() {
-  // console.log(planetHP);
-  console.log(playerHP);
+
+  if(planetHP <= 0){
+    clear();
+    background("black");
+    textSize(32);
+    fill(255);
+    stroke(0);
+    strokeWeight(4);
+    text("hi", width/2,height/2);
+  }
+
   if(changeState === true){
     state = "planet mode";
     changeState = false;
@@ -217,8 +226,7 @@ function draw() {
       createMineral();
       spawnMonsters();
     }
-
-    checkCollisionPlanet();
+    
     moveMonster();
     playerControl();
     background("black");
@@ -231,6 +239,7 @@ function draw() {
     camera.x = player.x;
     camera.y = player.y;
     camera.off();
+    checkCollisionPlanet();
   }
 }
 
@@ -273,7 +282,6 @@ function createPlayer(){
   player.addAni("movingUp", playerUpImg);
   player.addAni("movingLeft", playerLeftImg);
   player.addAni("movingRight", playerRightImg);
-  // player.collider = "n";
   player.overlaps(spaceship);
   player.overlaps(planet);
   player.rotationLock = true;
@@ -293,23 +301,46 @@ function createPortal(){
 
 //collision checker for planet mode
 function checkCollisionPlanet(){
-  player.overlaps(mineral, playerHitMineral);
-  player.overlaps(portal,playerHitPortal);
-  player.collides(fireballs,playerHitFireball);
-  player.collides(monsters,playerHitMonster);
+  if(!playerHP <= 0){
+    player.overlaps(mineral, playerHitMineral);
+    player.overlaps(portal,playerHitPortal);
+    player.collides(fireballs,playerHitFireball);
+    player.collides(monsters,playerHitMonster);
+  }
+  else{
+    playerHP = 10;
+    portal.remove();
+    monsters.remove();
+    mineral.remove();
+    player.remove();
+    fireballs.remove();
+    switchState();
+  }
+  
 }
-
 
 //checks collison between monster and player and reduces player health
 function playerHitMonster(player,monster){
-  playerHP -= 1;
-  player.overlaps(monster);
+  playerHP = 0;
 }
+  
 
 //fireball disappears after hitting player
 function playerHitFireball(player,fireball){
-  // playerHP -= 1;
+  playerHP -= 1;
   fireball.remove();
+}
+
+function hpChecker(){
+  if(playerHP <= 0){
+    playerHP = 10;
+    portal.remove();
+    monsters.remove();
+    mineral.remove();
+    player.remove();
+    fireballs.remove();
+    switchState();
+  }
 }
 
 //If player a mineral and enters planet function call state switcher function
