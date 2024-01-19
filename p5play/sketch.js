@@ -11,7 +11,7 @@ let timer = 1000;
 let extraAsteroids = timer*5;
 let planet;
 let planetImg;
-let planetHP = 2;
+let planetHP = 40;
 let score;
 let introImg;
 let state = "space mode";
@@ -24,6 +24,16 @@ let coinCount = 0;
 let spaceshipCoinCount = 0;
 let shopImg;
 let shopButton;
+let gameOverImg;
+let shopUI;
+let bulletButton;
+let bulletButtonDisplay = false;
+let bulletSpeed = 0;
+let shop;
+let bulletUp;
+let newPlanet;
+let shield;
+let playerMineralCount = 0;
 
 //sfx
 let thrust;
@@ -31,6 +41,7 @@ let shootSound;
 let coinCollect;
 let destroyAsteroid;
 let gameOverSound;
+let bgSound;
 
 //planet mode
 let desertBg;
@@ -98,6 +109,9 @@ function preload() {
   monsterImg = loadImage("Assets/Images/fire monster.gif");
   fireballImg = loadImage("Assets/Images/fireballani-ezgif.com-effects.gif");
   shopImg = loadImage("Assets/Images/shop icon.png");
+  gameOverImg = loadImage("Assets/Images/game-over-glitch.gif");
+  gameOverImg = loadImage("Assets/Images/istockphoto-1326959978-640x640.jpg");
+  shopUI = loadImage("Assets/Images/2109.w032.n003.25B.p1.25.png")
 
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
@@ -126,8 +140,10 @@ function preload() {
   coinCollect = loadSound("Assets/Audio/coin collect.mp3");
   destroyAsteroid = loadSound("Assets/Audio/asteroid destoyed.mp3");
   gameOverSound = loadSound("Assets/Audio/game over.mp3");
+  bgSound = loadSound("Assets/Audio/stranger-things-124008.mp3")
 
-  thrust.setVolume(0.5);
+  thrust.setVolume(0.2);
+  bgSound.setVolume(0.05)
 }
 
 
@@ -137,11 +153,9 @@ function setup(){
   monsters = new Group();
   coins = new Group();
   fireballs = new Group();
+  shield = new Group();
 
   //button stuff
-  // button = createButton('shop');
-  // button.position(0, 100);
-
   shopButton = new Clickable();    
   shopButton.locate(0,100);
   shopImg.scale = 5;
@@ -149,6 +163,16 @@ function setup(){
   shopButton.fitImage = false;
   shopButton.resize(75, 80);
   shopButton.text = ""; 
+
+  shopButton.onHover = function(){
+    shopButton.resize(85, 90);
+  }
+  shopButton.onOutside = function(){
+    shopButton.resize(75, 80);
+  }
+  shopButton.onPress = function(){
+    openShop();
+  }
 
 
   //spaceship setup stuff
@@ -159,7 +183,7 @@ function setup(){
   // asteroid stuff
   asteroids = new Group();
   
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i < 3; i++) {
     spawnWidth1 = random(300);
     spawnWidth2 = random(900,width);
     spawnWidthArray.push(spawnWidth1);
@@ -176,41 +200,43 @@ function setup(){
 //Draw loop
 function draw() {
 
-  if(planetHP <= 0){
-    clear();
-    background("black");
-    textSize(32);
-    fill(255);
-    stroke(0);
-    strokeWeight(4);
-    text("hi", width/2,height/2);
-  }
+  //upgrade button checker
+  bulletButtonChecker();
 
+  //state switchers
+  if(planetHP <= 0){
+    state = "end game"
+    endGame();
+  }
+  if(playerMineralCount >= 5){
+    state = "win game"
+    winGame();
+  }
   if(changeState === true){
     state = "planet mode";
     changeState = false;
   }
 
+  //space mode
   if(state === "space mode"){
     spaceship.visible = true;
     asteroids.visible = true;
     planet.visible = true;
-    // button.show();
-    // clickButton();
     clear();
     background(bgImg);
-    shopButton.draw();  
+    shopButton.draw();
     spaceshipControls();
     checkCollision();
+    displayUI();
     edges();
     asteroidEdes();
     camera.x = width/2;
     camera.y = height/2;
     camera.zoom = 1;
-    //globalClock();
   }
 
-  else{
+  //planet mode
+  else if(state === "planet mode"){
     if(player === true){
       spaceship.visible = false;
       asteroids.visible = false;
@@ -218,7 +244,6 @@ function draw() {
       spaceshipBullets.remove();
       particle.remove();
       thrust.stop();
-      // button.hide();
       coins.remove();
       spaceship.speed = 0;
       createPlayer();
@@ -226,7 +251,6 @@ function draw() {
       createMineral();
       spawnMonsters();
     }
-    
     moveMonster();
     playerControl();
     background("black");
@@ -241,11 +265,80 @@ function draw() {
     camera.off();
     checkCollisionPlanet();
   }
+
+  if (!bgSound.isPlaying()){
+    bgSound.loop();
+  }
 }
 
 
 
+
 //Functions
+function endGame(){
+  push()
+    spaceship.remove()
+    planet.remove();
+    camera.x = width/2;
+    camera.y = height/2;
+    asteroids.remove();
+    particle.remove();
+    spaceshipBullets.remove();
+    coins.remove();
+    rectMode(CENTER);
+    background("black");
+    textSize(100);
+    fill(255);
+    stroke(0);
+    strokeWeight(4);
+    text('Game Over', width/2, height/2);
+    pop()
+}
+
+//displays hp and coins and asteroid amount
+function displayUI(){
+  push();
+  textSize(30);
+  textStyle(BOLD);
+  text("HP: "+planetHP,20,50);
+  text("Coins: "+spaceshipCoinCount,130,50);
+  text("Asteroids: "+asteroids.length,270,50);
+  text("Minerals: "+playerMineralCount,460,50);
+  pop();
+}
+
+//checks if bullet upgrade button is pressed
+function bulletButtonChecker(){
+  if(bulletButtonDisplay === true){
+    if(bulletButton.mouse.pressing() && spaceshipCoinCount>= 10){
+   bulletSpeed += 2;
+   spaceshipCoinCount -= 10;
+   bulletButton.color = "red"
+ }
+ if(bulletButton.mouse.hovering()){
+   bulletButton.scale = 1.2;
+ }
+ else{
+   bulletButton.scale = 1;
+ }
+ }
+}
+
+//If minerals = 5, the game will end
+function winGame(){
+  monsters.remove();
+  portal.remove();
+  fireballs.remove();
+  camera.x = width/2;
+  camera.y = height/2;
+  player.remove();
+  background(bgImg)
+  newPlanet = new Sprite(random(width),random(height),500)
+  newPlanet.addImage(planetImg)
+  newPlanet.scale = 0.5
+}
+
+
 //Planet mode functions
 //creates background for planet mode
 function createBg(){
@@ -263,6 +356,7 @@ function createBg(){
   }
 }
 
+
 //creates a single mineral everytime state switches to planet mode in a random spot
 function createMineral(){
   mineral = new Sprite(random(-desertBg.width*1,desertBg.width*3),random(-desertBg.width*2.5,desertBg.height*1.5),
@@ -271,8 +365,8 @@ function createMineral(){
   mineral.overlaps(planet);
   mineral.overlaps(spaceship);
   mineral.scale = 0.1;
-  mineral.debug = true;
 }
+
 
 //creates a player when state switches to planet mode
 function createPlayer(){
@@ -286,8 +380,8 @@ function createPlayer(){
   player.overlaps(planet);
   player.rotationLock = true;
   player.scale = 1.5;
-  player.debug = true;
 }
+
 
 //creates a single portal everytime state switches to planet mode in a random spot
 function createPortal(){
@@ -296,8 +390,8 @@ function createPortal(){
   portal.addImage(portalImg);
   portal.scale = 0.8;
   portal.collider = "n";
-  portal.debug = true;
 }
+
 
 //collision checker for planet mode
 function checkCollisionPlanet(){
@@ -316,7 +410,6 @@ function checkCollisionPlanet(){
     fireballs.remove();
     switchState();
   }
-  
 }
 
 //checks collison between monster and player and reduces player health
@@ -331,9 +424,11 @@ function playerHitFireball(player,fireball){
   fireball.remove();
 }
 
+//if player hp is below 0 state gets switched to space mode
 function hpChecker(){
   if(playerHP <= 0){
     playerHP = 10;
+    mineralCount = 0;
     portal.remove();
     monsters.remove();
     mineral.remove();
@@ -345,9 +440,7 @@ function hpChecker(){
 
 //If player a mineral and enters planet function call state switcher function
 function playerHitPortal(player,portal){
-  console.log("hit");
-  if(mineralCount === 1){
-    console.log("switch");
+  if(mineralCount >= 1){
     mineralCount = 0;
     portal.remove();
     monsters.remove();
@@ -361,14 +454,14 @@ function playerHitPortal(player,portal){
 //mineral gets removed from screen and mineral counter goes up by one
 function playerHitMineral(player,mineral){
   mineral.remove();
-  mineralCount ++;
+  mineralCount += 1;
+  playerMineralCount += 1;
 }
 
 // shoots fireballs after 5s
 function spawnClock(){
   fireballs.speed = 10;
   if (millis() > extraAsteroids) {
-    // for (let i=0; i<10; i++) {
     for(let monster of monsters){
       shootFireball(monster.angleTo(player),monster.pos.x,monster.pos.y);
       shootFireball(monster.angleTo(player)+PI/2,monster.pos.x,monster.pos.y);
@@ -376,10 +469,8 @@ function spawnClock(){
       shootFireball(monster.angleTo(player)+PI,monster.pos.x,monster.pos.y);
       shootFireball(monster.angleTo(player)-PI,monster.pos.x,monster.pos.y);
     } 
-    // }
     extraAsteroids = millis() + timer*5;
   }
-  
 }
 
 //creates fireballs which go from the monster to the player
@@ -395,7 +486,6 @@ function shootFireball(angle,x,y){
   fireball.overlaps(planet);
   fireball.overlaps(spaceship);
   fireball.overlaps(mineral);
-  fireball.debug = true;
   fireball.life = 500;
 }
 
@@ -406,7 +496,6 @@ function spawnMonsters(){
   let monster = new monsters.Sprite(monsterPos.x,monsterPos.y,);
   monster.rotationLock = true;
   monster.scale = 0.5;
-  monster.debug = true;
 }
 
 //monsters follow the player and if it comes to close it stops moving
@@ -436,6 +525,7 @@ function moveMonster(){
     }
   }
 }
+
 
 //player contols
 function playerControl(){
@@ -502,21 +592,16 @@ function checkCollision(){
   spaceship.collides(asteroids, spaceshipHitAsteroids);
   spaceshipBullets.collides(asteroids, bulletsHitAsteroids);
   planet.collides(asteroids,planetHitAsteroids);
+
   if(coinCount >= 1){
     spaceship.overlaps(coins,spaceshipHitCoin);
   }
-  
 
   if(asteroids.length ===0){
     changeState = true;
   }
 }
 
-function clickButton(){
-  button.mousePressed(() => {
-    allSprites.speed = 0;
-  });
-}
 
 //Eexcutes various functions after a specific amount of time
 function globalClock(){
@@ -549,7 +634,6 @@ function createPlanet(x,y){
   imageMode(CENTER);
   planet.addImage(planetImg);
   planet.mass = 2;
-  planet.debug = true;
   pop();
 }
 
@@ -615,7 +699,6 @@ function createCoin(x,y){
   coin.addImage(coinImg);
   coin.scale = 0.25;
   coinCount += 1;
-  coin.debug = true;
 }
 
 //checks collisions between asteroids and spaceship
@@ -668,7 +751,6 @@ function createAsteroid(x, y, size) {
   spaceship.mass = 5;
   asteroid.direction = random(360);
   asteroid.speed = random(2,7);
-  asteroid.debug = true;
   pop();
 }
 
@@ -702,7 +784,6 @@ function createSpaceship(x,y,w,h){
   spaceship.addAni("idle",spaceshipImg);
   spaceship.addAni("moving", spaceshipMoveImg1,spaceshipMoveImg1,spaceshipMoveImg2);
   spaceship.rotationLock = true;
-  spaceship.debug = true;
   pop();
 }
 
@@ -737,6 +818,9 @@ function spaceshipControls(){
     shootSound.play();
     createBullets("spaceship");
   }
+  if(mouse.presses("right")){
+    closeShop()
+  }
 }
 
 //creates bullets that get destroyed when it hits the asteroids
@@ -757,8 +841,7 @@ function createBullets(type){
     
     bullet.life = width+20;
     bullet.rotation = spaceship.rotation;
-    bullet.speed = 12;
-    bullet.debug = true;
+    bullet.speed = 12 + bulletSpeed;
     spaceshipBullets.add(bullet);
   }
 }
@@ -778,4 +861,36 @@ function edges(){
   else if (spaceship.y < -spaceship.h){
     spaceship.y = height + spaceship.h;
   }
+}
+
+//opens shop
+function openShop(){
+  allSprites.speed = 0;
+  shop = new Sprite();
+  shop.collider = "n"
+  shop.addImage(shopUI)
+  shop.scale = 0.3
+
+  bulletUp = new Sprite();
+  bulletUp.collider = "n"
+  bulletUp.addImage(bulletImg);
+  bulletUp.scale = 0.8
+
+  bulletButtonDisplay = true;
+  
+  bulletButton = new Sprite(width/2,height/2+138,80,40);
+  bulletButton.color = '#cdc50a';
+  bulletButton.collider = "s"
+  bulletButton.textSize = 40;
+  bulletButton.text = "10";
+  bulletButton.textColor = "blue"
+}
+
+//closes shop
+function closeShop(){
+  shop.remove();
+  bulletUp.remove();
+  bulletButton.remove();
+  asteroids.direction = random(360);
+  asteroids.speed = random(2,7);
 }
