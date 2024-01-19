@@ -300,6 +300,7 @@ function displayUI(){
   push();
   textSize(30);
   textStyle(BOLD);
+  fill("white");
   text("HP: "+planetHP,20,50);
   text("Coins: "+spaceshipCoinCount,130,50);
   text("Asteroids: "+asteroids.length,270,50);
