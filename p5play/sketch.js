@@ -14,7 +14,7 @@ let planetImg;
 let planetHP = 40;
 let score;
 let introImg;
-let state = "space mode";
+let state = "start screen";
 let changeState = false;
 let player = true;
 let particle;
@@ -34,6 +34,10 @@ let bulletUp;
 let newPlanet;
 let shield;
 let playerMineralCount = 0;
+let playButtonImg;
+let instructionButtonImg;
+let instructionButton;
+let playButton
 
 //sfx
 let thrust;
@@ -97,14 +101,11 @@ function preload() {
   bulletImg = loadImage("Assets/Images/bullet.gif");
   spaceshipMoveImg1 = loadImage("Assets/Images/Spaceship with fire 1.png");
   spaceshipMoveImg2 = loadImage("Assets/Images/Spaceship with fire 2 copy.png");
-  // planetImg = loadImage("Assets/Images/planet.webp");
   planetImg = loadImage("Assets/Images/lava planet animated from space (2).png");
   introImg = loadImage("Assets/Images/Intro pic.jpeg");
-  // desertBg = loadImage("Assets/Images/Planet floor img.jpg");
   desertBg = loadImage("Assets/Images/molten lava bg.webp");
   portalImg = loadImage("Assets/Images/portal gif.gif");
   mineralImg = loadImage("Assets/Images/red icy shard.png");
-  // mineralImg = loadImage("Assets/Images/lava crystal 1.png");
   coinImg = loadImage("Assets/Images/coin spinning.gif");
   monsterImg = loadImage("Assets/Images/fire monster.gif");
   fireballImg = loadImage("Assets/Images/fireballani-ezgif.com-effects.gif");
@@ -112,6 +113,8 @@ function preload() {
   gameOverImg = loadImage("Assets/Images/game-over-glitch.gif");
   gameOverImg = loadImage("Assets/Images/istockphoto-1326959978-640x640.jpg");
   shopUI = loadImage("Assets/Images/2109.w032.n003.25B.p1.25.png")
+  playButtonImg = loadImage("Assets/Images/Play Button.png")
+  instructionButtonImg = loadImage("Assets/Images/Instruction Button.png")
 
   //multiple asteroid images
   asteroidImg1 = loadImage("Assets/Images/Asteroid1.png");
@@ -122,11 +125,6 @@ function preload() {
   particleImg = loadImage("Assets/Images/particle.png");
 
   //multiple player images
-  // playerImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (4).gif");
-  // playerDownImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (7).gif");
-  // playerUpImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (5).gif");
-  // playerLeftImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (3).gif");
-  // playerRightImg = loadImage("Assets/Images/ezgif.com-animated-gif-maker (1).gif");
   playerImg = loadImage("Assets/Images/ezgif.com-resize (4).gif");
   playerDownImg = loadImage("Assets/Images/ezgif.com-resize.gif");
   playerUpImg = loadImage("Assets/Images/ezgif.com-resize (3).gif");
@@ -135,7 +133,6 @@ function preload() {
 
   //audio
   thrust = loadSound("Assets/Audio/space thrust.mp3");
-  // shootSound = loadSound("Assets/Audio/bullet sound.mp3");
   shootSound = loadSound("Assets/Audio/arrays-objects-assn_shoot Sound.wav");
   coinCollect = loadSound("Assets/Audio/coin collect.mp3");
   destroyAsteroid = loadSound("Assets/Audio/asteroid destoyed.mp3");
@@ -159,7 +156,7 @@ function setup(){
   shopButton = new Clickable();    
   shopButton.locate(0,100);
   shopImg.scale = 5;
-  shopButton.image = shopImg;     
+  shopButton.image = shopImg; 
   shopButton.fitImage = false;
   shopButton.resize(75, 80);
   shopButton.text = ""; 
@@ -216,15 +213,28 @@ function draw() {
     state = "planet mode";
     changeState = false;
   }
+  if(state === "start screen"){
+    asteroids.visible = false
+    spaceship.visible = false
+    planet.visible = false
+    planet.collider = "n"
+    spaceship.collider = "n"
+    displayStartScreen();
+    playButton.draw();
+  }
 
   //space mode
   if(state === "space mode"){
     spaceship.visible = true;
     asteroids.visible = true;
     planet.visible = true;
+    playButton.remove()
+    planet.collider = "s"
+    spaceship.collider = "d"
     clear();
     background(bgImg);
     shopButton.draw();
+    instructionButton.remove()
     spaceshipControls();
     checkCollision();
     displayUI();
@@ -311,7 +321,7 @@ function displayUI(){
 //checks if bullet upgrade button is pressed
 function bulletButtonChecker(){
   if(bulletButtonDisplay === true){
-    if(bulletButton.mouse.pressing() && spaceshipCoinCount>= 10){
+    if(bulletButton.mouse.presses() && spaceshipCoinCount>= 10){
    bulletSpeed += 2;
    spaceshipCoinCount -= 10;
    bulletButton.color = "red"
@@ -337,6 +347,47 @@ function winGame(){
   newPlanet = new Sprite(random(width),random(height),500)
   newPlanet.addImage(planetImg)
   newPlanet.scale = 0.5
+}
+
+//start screen
+function displayStartScreen(){
+  background(bgImg)
+
+  if(!playButton){
+  playButton = new Sprite(width/2, height/2,500,200);
+  playButton.addImage(playButtonImg)
+  playButton.collider = "s"
+  playButton.scale = 0.6
+  }
+  if(playButton.mouse.hovering()){
+    playButton.scale = 0.65;
+  }
+  else{
+    playButton.scale = 0.6;
+  }
+  if(playButton.mouse.presses()){
+    state = "space mode"
+  }
+
+
+  if(!instructionButton){
+    instructionButton = new Sprite(width-50, height-50,550);
+    instructionButton.debug = true
+    instructionButton.addImage(instructionButtonImg)
+    instructionButton.collider = "s"
+    instructionButton.scale = 0.1
+    }
+    if(instructionButton.mouse.hovering()){
+      instructionButton.scale = 0.12;
+    }
+    else{
+      instructionButton.scale = 0.1;
+    }
+    if(instructionButton.mouse.presses()){
+      state = "space mode"
+    }
+  
+
 }
 
 
@@ -892,6 +943,9 @@ function closeShop(){
   shop.remove();
   bulletUp.remove();
   bulletButton.remove();
-  asteroids.direction = random(360);
-  asteroids.speed = random(2,7);
+  for(let asteroid of asteroids){
+  asteroid.direction = random(360);
+  asteroid.speed = random(2,7);
+  }
+  
 }
