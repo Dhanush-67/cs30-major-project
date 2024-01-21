@@ -30,6 +30,7 @@ let bulletButton;
 let bulletButtonDisplay = false;
 let bulletSpeed = 0;
 let shop;
+let shopState;
 let bulletUp;
 let newPlanet;
 let shield;
@@ -151,6 +152,8 @@ function setup(){
   coins = new Group();
   fireballs = new Group();
   shield = new Group();
+  spaceshipBullets = new Group();
+  asteroids = new Group();
 
   //button stuff
   shopButton = new Clickable();    
@@ -170,27 +173,14 @@ function setup(){
   shopButton.onPress = function(){
     openShop();
   }
-
-
-  //spaceship setup stuff
-  createSpaceship(width/2,height/2,spaceshipImg.height-30,60);
-  spaceshipBullets = new Group();
-  createPlanet(width/2,height/2);
-  
-  // asteroid stuff
-  asteroids = new Group();
-  
-  for (let i = 0; i < 3; i++) {
-    spawnWidth1 = random(300);
-    spawnWidth2 = random(900,width);
-    spawnWidthArray.push(spawnWidth1);
-    spawnWidthArray.push(spawnWidth2);
-    spawnHeight1 = random(100);
-    spawnHeight2 = random(500,height);
-    spawnHeightArray.push(spawnHeight1);
-    spawnHeightArray.push(spawnHeight2);
-    createAsteroid(random(spawnWidthArray),random(spawnHeightArray),0.35);
-  }
+    playButton = new Sprite(width/2, height/2,500,200);
+    playButton.addImage(playButtonImg)
+    playButton.collider = "s"
+    playButton.scale = 0.6
+    instructionButton = new Sprite(width-50, height-50,550);
+    instructionButton.addImage(instructionButtonImg)
+    instructionButton.collider = "s"
+    instructionButton.scale = 0.1
 
 }
 
@@ -205,36 +195,28 @@ function draw() {
     state = "end game"
     endGame();
   }
-  if(playerMineralCount >= 5){
+  else if(playerMineralCount >= 1){
     state = "win game"
     winGame();
   }
-  if(changeState === true){
+  else if(changeState === true){
     state = "planet mode";
     changeState = false;
   }
-  if(state === "start screen"){
-    asteroids.visible = false
-    spaceship.visible = false
-    planet.visible = false
-    planet.collider = "n"
-    spaceship.collider = "n"
+  else if(state === "start screen"){
     displayStartScreen();
-    playButton.draw();
   }
 
   //space mode
-  if(state === "space mode"){
+  else if(state === "space mode"){
     spaceship.visible = true;
     asteroids.visible = true;
     planet.visible = true;
-    playButton.remove()
     planet.collider = "s"
     spaceship.collider = "d"
     clear();
     background(bgImg);
     shopButton.draw();
-    instructionButton.remove()
     spaceshipControls();
     checkCollision();
     displayUI();
@@ -251,10 +233,10 @@ function draw() {
       spaceship.visible = false;
       asteroids.visible = false;
       planet.visible = false;
-      spaceshipBullets.remove();
+      spaceshipBullets.removeAll();
       particle.remove();
       thrust.stop();
-      coins.remove();
+      coins.removeAll();
       spaceship.speed = 0;
       createPlayer();
       createPortal();
@@ -342,7 +324,6 @@ function winGame(){
   fireballs.remove();
   camera.x = width/2;
   camera.y = height/2;
-  player.remove();
   background(bgImg)
   newPlanet = new Sprite(random(width),random(height),500)
   newPlanet.addImage(planetImg)
@@ -353,41 +334,44 @@ function winGame(){
 function displayStartScreen(){
   background(bgImg)
 
-  if(!playButton){
-  playButton = new Sprite(width/2, height/2,500,200);
-  playButton.addImage(playButtonImg)
-  playButton.collider = "s"
-  playButton.scale = 0.6
-  }
   if(playButton.mouse.hovering()){
     playButton.scale = 0.65;
   }
   else{
     playButton.scale = 0.6;
   }
+  if(instructionButton.mouse.hovering()){
+    instructionButton.scale = 0.12;
+  }
+  else{
+    instructionButton.scale = 0.1;
+  }
+  if(instructionButton.mouse.presses()){
+    console.log("hi")
+  }
   if(playButton.mouse.presses()){
+    playButton.collider = "n"
+    instructionButton.collider = "n"
+    playButton.remove()
+    instructionButton.remove()
+
+    //creates asteroids, spaceship and planet once game starts
+    createSpaceship(width/2,height/2,spaceshipImg.height-30,60)
+    createPlanet(width/2,height/2)
+    for (let i = 0; i < 3; i++) {
+      spawnWidth1 = random(300);
+      spawnWidth2 = random(900,width);
+      spawnWidthArray.push(spawnWidth1);
+      spawnWidthArray.push(spawnWidth2);
+      spawnHeight1 = random(100);
+      spawnHeight2 = random(500,height);
+      spawnHeightArray.push(spawnHeight1);
+      spawnHeightArray.push(spawnHeight2);
+      createAsteroid(random(spawnWidthArray),random(spawnHeightArray),0.35);
+    }
+
     state = "space mode"
   }
-
-
-  if(!instructionButton){
-    instructionButton = new Sprite(width-50, height-50,550);
-    instructionButton.debug = true
-    instructionButton.addImage(instructionButtonImg)
-    instructionButton.collider = "s"
-    instructionButton.scale = 0.1
-    }
-    if(instructionButton.mouse.hovering()){
-      instructionButton.scale = 0.12;
-    }
-    else{
-      instructionButton.scale = 0.1;
-    }
-    if(instructionButton.mouse.presses()){
-      state = "space mode"
-    }
-  
-
 }
 
 
@@ -456,10 +440,11 @@ function checkCollisionPlanet(){
   else{
     playerHP = 10;
     portal.remove();
-    monsters.remove();
+    monsters.removeAll();
     mineral.remove();
     player.remove();
-    fireballs.remove();
+    fireballs.removeAll();
+    mineralCount = 0;
     switchState();
   }
 }
@@ -476,29 +461,17 @@ function playerHitFireball(player,fireball){
   fireball.remove();
 }
 
-//if player hp is below 0 state gets switched to space mode
-function hpChecker(){
-  if(playerHP <= 0){
-    playerHP = 10;
-    mineralCount = 0;
-    portal.remove();
-    monsters.remove();
-    mineral.remove();
-    player.remove();
-    fireballs.remove();
-    switchState();
-  }
-}
 
 //If player a mineral and enters planet function call state switcher function
 function playerHitPortal(player,portal){
   if(mineralCount >= 1){
     mineralCount = 0;
     portal.remove();
-    monsters.remove();
+    monsters.removeAll();
     mineral.remove();
     player.remove();
-    fireballs.remove();
+    fireballs.removeAll();
+    playerMineralCount += 1;
     switchState();
   }
 }
@@ -507,7 +480,6 @@ function playerHitPortal(player,portal){
 function playerHitMineral(player,mineral){
   mineral.remove();
   mineralCount += 1;
-  playerMineralCount += 1;
 }
 
 // shoots fireballs after 5s
@@ -582,7 +554,7 @@ function moveMonster(){
 //player contols
 function playerControl(){
   player.speed = 10;
-	
+	if (keyIsPressed === true) {
   if (kb.pressing("up")) {
     player.direction = -90;
     player.changeAni("movingUp");
@@ -595,7 +567,9 @@ function playerControl(){
   } else if (kb.pressing("right")) {
     player.direction = 0;
     player.changeAni("movingRight");
-  } else {
+  } 
+}
+else {
 	  player.speed = 0;
     player.changeAni("idle");
   }
@@ -650,7 +624,7 @@ function checkCollision(){
   }
 
   if(asteroids.length ===0){
-    changeState = true;
+    state = "planet mode"
   }
 }
 
@@ -870,8 +844,9 @@ function spaceshipControls(){
     shootSound.play();
     createBullets("spaceship");
   }
-  if(mouse.presses("right")){
+  if(mouse.presses("right") && shopState === true){
     closeShop()
+    shopState = false
   }
 }
 
@@ -929,6 +904,7 @@ function openShop(){
   bulletUp.scale = 0.8
 
   bulletButtonDisplay = true;
+  shopState = true;
   
   bulletButton = new Sprite(width/2,height/2+138,80,40);
   bulletButton.color = '#cdc50a';
