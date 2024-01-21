@@ -1,0 +1,12 @@
+What advice would you give to yourself if you were to start a project like this again?
+I think the biggest advice I would give myself if I were to start a project like this is to make a better outline for my game. When I made the outline for this game I did not think about it much and as a result I had to try to link two completly different concepts, a space game and a dungeon game. Also I think it is important to sort things out based on different scenes from the start else it is going to get hard when you switch scenes. Finally it is also important to test a lot using the console. I found a major bug in my game that I detected in the console just days before the submission as I had not tested enough. So I would do more than that. Also it is important to know when to give up on a certain feature if it is not working out. 
+
+
+Did you complete everything in your "needs to have" list?
+Yes, I completed everything in my "needs to have" list. I have a spaceship that can move and shoot bullets, asteroids that float in space and deal damage to the planet, another location that can be explored, with the camera following the player and have loot and an enemy that shoots fireballs. I also have nice shop where you can upgrade yoour spaceship. And lastly I have good graphics and sound. 
+
+What was the hardest part of the project?
+The hardest part of my project was implement a library into my game. From the start I knew a library would make my life easier but since I had never used one it took me a very long time to learn it. Also making the spaceship move was quite hard as it involved vector multiplication as I had to apply force in the direction of the spaceship while also applying resistance. And switching states was also extremly hard as I needed it to be a continuos loop not like swithing it to the end screen. I had to make sure certain functions and sprites only run in one state and get removed in the other, while also making sure that they run again when I switch back to the orignal state.
+
+Were there any problems you could not solve?
+I could not make the other location randomly generate like a dungeon. This was my initial plan but I realised that making it would like making a whole different project as it was quite complex. So I just stuck with exploring a vast bounded open area. I also wanted to add some cool defense stuff in the shop but I did not have time for that so I just made some upgrades that we could buy for the spaceship.
