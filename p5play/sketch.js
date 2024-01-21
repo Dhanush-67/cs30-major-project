@@ -1,9 +1,7 @@
-// Project Title
+// Protect the Planet
 // Dhanush Rai
-// Date
-//
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// 21-01-2024
+
 
 //Global variables
 let bgImg;
@@ -27,6 +25,9 @@ let shopButton;
 let gameOverImg;
 let shopUI;
 let bulletButton;
+let spaceshipSpeed = 0;
+let rotationSpeed = 0;
+let speedButton;
 let bulletButtonDisplay = false;
 let bulletSpeed = 0;
 let shop;
@@ -189,13 +190,14 @@ function draw() {
 
   //upgrade button checker
   bulletButtonChecker();
+  speedButtonChecker();
 
   //state switchers
   if(planetHP <= 0){
     state = "end game"
     endGame();
   }
-  else if(playerMineralCount >= 1){
+  else if(playerMineralCount >= 5){
     state = "win game"
     winGame();
   }
@@ -271,19 +273,19 @@ function endGame(){
   push()
     spaceship.remove()
     planet.remove();
-    camera.x = width/2;
-    camera.y = height/2;
     asteroids.remove();
     particle.remove();
     spaceshipBullets.remove();
     coins.remove();
     rectMode(CENTER);
-    background("black");
+    background(bgImg);
     textSize(100);
     fill(255);
+    textStyle(BOLD);
+    textFont("Quantum Sans Serif Font")
     stroke(0);
     strokeWeight(4);
-    text('Game Over', width/2, height/2);
+    text('Game Over', width/2-200, height/2);
     pop()
 }
 
@@ -292,11 +294,16 @@ function displayUI(){
   push();
   textSize(30);
   textStyle(BOLD);
+  textFont("Quantum Sans Serif Font")
   fill("white");
-  text("HP: "+planetHP,20,50);
-  text("Coins: "+spaceshipCoinCount,130,50);
-  text("Asteroids: "+asteroids.length,270,50);
-  text("Minerals: "+playerMineralCount,460,50);
+  image(planetImg,5,5,80,80)
+  text(":"+planetHP,70,50);
+  image(coinImg,120,20,50,50)
+  text(":"+spaceshipCoinCount,170,50);
+  image(asteroidImg3,140,-45,200,200)
+  text(":"+asteroids.length,270,50);
+  image(mineralImg,300,5,75,75)
+  text(":"+playerMineralCount,350,50);
   pop();
 }
 
@@ -309,7 +316,7 @@ function bulletButtonChecker(){
    bulletButton.color = "red"
  }
  if(bulletButton.mouse.hovering()){
-   bulletButton.scale = 1.2;
+   bulletButton.scale = 1.1;
  }
  else{
    bulletButton.scale = 1;
@@ -317,17 +324,45 @@ function bulletButtonChecker(){
  }
 }
 
+//check if speed upgrade button is pressed
+function speedButtonChecker(){
+  if(bulletButtonDisplay === true){
+    if(speedButton.mouse.presses() && spaceshipCoinCount>= 10){
+   spaceshipSpeed += 0.05;
+   if(rotationSpeed < 1){
+    rotationSpeed += 1;
+   }
+   spaceshipCoinCount -= 10;
+   speedButton.color = "red"
+ }
+ if(speedButton.mouse.hovering()){
+   speedButton.scale = 1.1;
+ }
+ else{
+   speedButton.scale = 1;
+ }
+ }
+}
+
 //If minerals = 5, the game will end
 function winGame(){
-  monsters.remove();
-  portal.remove();
-  fireballs.remove();
-  camera.x = width/2;
-  camera.y = height/2;
-  background(bgImg)
-  newPlanet = new Sprite(random(width),random(height),500)
-  newPlanet.addImage(planetImg)
-  newPlanet.scale = 0.5
+  push()
+    spaceship.remove()
+    planet.remove();
+    asteroids.remove();
+    particle.remove();
+    spaceshipBullets.remove();
+    coins.remove();
+    rectMode(CENTER);
+    background(bgImg);
+    textSize(100);
+    fill(255);
+    textStyle(BOLD);
+    textFont("Quantum Sans Serif Font")
+    stroke(0);
+    strokeWeight(4);
+    text('You Win', width/2-200, height/2);
+    pop()
 }
 
 //start screen
@@ -347,7 +382,8 @@ function displayStartScreen(){
     instructionButton.scale = 0.1;
   }
   if(instructionButton.mouse.presses()){
-    console.log("hi")
+    let message = "Press WASD to control the spaceship and SPACE to shoot. Your goal is to defend the planet by either crashing into or shooting the asteroids. You can use the coins you get to buy upgrades in the shop. RIGHT click to close the shop. After every round you will be sent to another dimension where you aim to collect ONE mineral and find a portal and hop into that while escaping a demon. This cycle repeats until you find 5 minerals which means you win or if your planet HP reaches 0 which means you lose. Have fun!"
+    window.alert(message)
   }
   if(playButton.mouse.presses()){
     playButton.collider = "n"
@@ -822,8 +858,8 @@ function spaceshipControls(){
 
   if (kb.pressing("up")){
     if(spaceship.speed < 10){
-      spaceship.vel.x += cos(spaceship.rotation) * 0.15;
-      spaceship.vel.y += sin(spaceship.rotation) * 0.15;
+      spaceship.vel.x += cos(spaceship.rotation) * (0.15+spaceshipSpeed);
+      spaceship.vel.y += sin(spaceship.rotation) * (0.15+spaceshipSpeed);
     }
     spaceship.changeAni("moving");
     if (!thrust.isPlaying()){
@@ -835,10 +871,10 @@ function spaceshipControls(){
     thrust.stop();
   }
   if (kb.pressing("right")){
-    spaceship.rotation += 4;
+    spaceship.rotation += 5 + rotationSpeed;
   }
   if (kb.pressing("left")){
-    spaceship.rotation -= 4;
+    spaceship.rotation -= 5 + rotationSpeed;
   } 
   if (kb.presses(" ")) {
     shootSound.play();
@@ -903,22 +939,40 @@ function openShop(){
   bulletUp.addImage(bulletImg);
   bulletUp.scale = 0.8
 
+  spaceshipwithFire = new Sprite(width/2-150,height/2);
+  spaceshipwithFire.collider = "n"
+  spaceshipwithFire.addImage(spaceshipMoveImg1);
+  spaceshipwithFire.scale = 0.5
+
   bulletButtonDisplay = true;
   shopState = true;
   
-  bulletButton = new Sprite(width/2,height/2+138,80,40);
+  bulletButton = new Sprite(width/2+2,height/2+137,165,40);
   bulletButton.color = '#cdc50a';
   bulletButton.collider = "s"
   bulletButton.textSize = 40;
+  textStyle(BOLD);
+  textFont("Quantum Sans Serif Font")
   bulletButton.text = "10";
   bulletButton.textColor = "blue"
+
+  speedButton = new Sprite(width/2-185,height/2+137,165,40);
+  speedButton.color = '#cdc50a';
+  speedButton.collider = "s"
+  speedButton.textSize = 40;
+  textStyle(BOLD);
+  textFont("Quantum Sans Serif Font")
+  speedButton.text = "10";
+  speedButton.textColor = "blue"
 }
 
 //closes shop
 function closeShop(){
   shop.remove();
   bulletUp.remove();
+  spaceshipwithFire.remove();
   bulletButton.remove();
+  speedButton.remove();
   for(let asteroid of asteroids){
   asteroid.direction = random(360);
   asteroid.speed = random(2,7);
